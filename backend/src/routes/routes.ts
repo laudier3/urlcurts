@@ -36,47 +36,50 @@ const prisma = new PrismaClient();
 
 // --- Registro ---
 router.post('/api/register', async (req: any, res: any) => {
-  const { name, email, password, phone, age } = req.body;
+  const { name, email, password, phone, age, image, access } = req.body
 
-  console.log("Chegando...")
-
-  // Verifica se todos os campos necessários foram preenchidos
   if (!name || !email || !password || !phone || !age) {
-    return res.status(400).json({ error: 'Todos os campos são obrigatórios!' });
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios!' })
   }
 
   try {
-    // Verifica se o usuário já existe
-    const exists = await prisma.user.findUnique({ where: { email } });
-    if (exists) {
-      //console.log('Usuário já existe com este email!')
-      return res.status(400).json({ error: 'Usuário já existe com este email!' });
+    // Verifica se o email já existe
+    const existsEmail = await prisma.user.findUnique({ where: { email } })
+    if (existsEmail) {
+      return res.status(400).json({ error: 'email' })
     }
 
-    // Criptografar a senha
-    const hashedPassword = await hashPassword(password);
+    // Verifica se o telefone já existe
+    const existsPhone = await prisma.user.findUnique({ where: { phone } })
+    if (existsPhone) {
+      return res.status(400).json({ error: 'phone' })
+    }
+
+    // Criptografa a senha
+    const hashedPassword = await hashPassword(password)
 
     // Criação do usuário
     const user = await prisma.user.create({
       data: {
         name,
         email,
-        password: hashedPassword,
         phone,
-        age: Number(age), // Certifique-se de que a idade seja numérica
+        age: Number(age),
+        access: access || 'user',
+        image: image || 'https://i.pravatar.cc/150',
+        password: hashedPassword,
       },
-    });
+    })
 
-    // Gerar o token JWT
-    const token = generateToken({ id: user.id, email: user.email });
+    // Gera token JWT
+    const token = generateToken({ id: user.id, email: user.email })
 
-    // Retornar o token para o frontend
-    res.status(201).json({ token });
+    return res.status(201).json({ success: true, msg: 'Usuário cadastrado com sucesso!', user })
   } catch (err) {
-    //console.error('Esse número de telefone já ta sendo usado por outro usuário, tente outro.:', err);
-    res.status(500).json({ error: 'Esse número de telefone já ta sendo usado por outro usuário, tente outro.' });
+    console.error('Erro ao cadastrar:', err)
+    return res.status(500).json({ error: 'Erro inesperado ao cadastrar usuário.' })
   }
-});
+})
 
 // Recuperação de senha via telefone
 /*router.post('/api/recover-password', async (req: any, res: any) => {

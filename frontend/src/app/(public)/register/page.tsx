@@ -61,7 +61,8 @@ export default function RegisterPage() {
 
     try {
       setLoading(true)
-      const { data } = await api.post('/user', {
+
+      const payload = {
         name: formData.name.trim(),
         age: finalAge.toString(),
         email: formData.email.trim(),
@@ -69,14 +70,43 @@ export default function RegisterPage() {
         access: formData.access,
         image: formData.image || 'https://i.pravatar.cc/150',
         password: formData.password.trim(),
-      })
+      }
 
-      console.log('Resposta da API:', data)
-      setSuccess(data.msg || 'Cadastro realizado com sucesso!')
+      const response = await api.post('/register', payload, { withCredentials: true })
+      const data = response.data
+
+      // Tratamento de email ou telefone já cadastrado
+      if (data.error) {
+        if (data.error.toLowerCase().includes('email')) {
+          setError('Este email já está cadastrado.')
+          return
+        }
+        if (data.error.toLowerCase().includes('telefone') || data.error.toLowerCase().includes('phone')) {
+          setError('Este número de telefone já está cadastrado.')
+          return
+        }
+        setError(data.error)
+        return
+      }
+
+      // Confirmação de sucesso
+      if (!data || data.success === false) {
+        throw new Error(data.msg || 'Falha ao cadastrar usuário no servidor.')
+      }
+
+      setSuccess(data.msg || 'Usuário cadastrado com sucesso! Redirecionando para login...')
       setTimeout(() => router.push('/login'), 2000)
-    } catch (err: any) {
-      console.error('Erro ao cadastrar:', err)
-      setError(err.response?.data?.msg || 'Erro inesperado. Tente novamente mais tarde.')
+    } catch (err: unknown) {
+      console.error('❌ Erro ao cadastrar:', err)
+
+      if (err instanceof Error) {
+        setError(err.message)
+      } else if (typeof err === 'object' && err && 'response' in err) {
+        const apiError = err as { response?: { data?: { msg?: string; error?: string } } }
+        setError(apiError.response?.data?.msg || apiError.response?.data?.error || 'Erro inesperado.')
+      } else {
+        setError('Erro inesperado. Tente novamente mais tarde.')
+      }
     } finally {
       setLoading(false)
     }
@@ -104,7 +134,6 @@ export default function RegisterPage() {
         {error && <p className="text-red-600 text-sm mb-4 text-center">{error}</p>}
         {success && <p className="text-green-600 text-sm mb-4 text-center">{success}</p>}
 
-        {/* Campos do formulário */}
         <input
           type="text"
           name="name"
@@ -159,7 +188,6 @@ export default function RegisterPage() {
           <option value="admin">Administrador</option>
         </select>
 
-        {/* Senha com ícone de olho */}
         <div className="relative mb-4">
           <input
             type={showPassword ? 'text' : 'password'}
@@ -180,7 +208,6 @@ export default function RegisterPage() {
           </button>
         </div>
 
-        {/* Confirmar senha com ícone de olho */}
         <div className="relative mb-4">
           <input
             type={showConfirmPassword ? 'text' : 'password'}
@@ -225,7 +252,6 @@ export default function RegisterPage() {
         </div>
       </form>
 
-      {/* CSS do spinner */}
       <style jsx>{`
         .loader {
           border-top-color: transparent;

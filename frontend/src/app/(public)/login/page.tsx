@@ -34,11 +34,25 @@ export default function LoginPage() {
         { withCredentials: true }
       )
 
-      setSuccess(response.data.msg || 'Login realizado com sucesso!')
-      setTimeout(() => router.push('/dashboard'), 1500)
+      console.log('🔍 Resposta da API:', response.data)
+
+      // ✅ Checagem segura de sucesso
+      const { success, token, auth, message } = response.data || {}
+
+      if (success || auth === true || token) {
+        // ✅ Armazena o token no localStorage (ou cookie, se preferir)
+        if (token) {
+          localStorage.setItem('authToken', token)
+        }
+
+        setSuccess(message || 'Login realizado com sucesso!')
+        setTimeout(() => router.push('/dashboard'), 1200)
+      } else {
+        setError(message || 'Usuário ou senha incorretos.')
+      }
     } catch (err: any) {
-      console.error('Erro no login:', err)
-      setError(err.response?.data?.message || 'Usuário ou senha incorreta');
+      console.error('❌ Erro no login:', err)
+      setError(err.response?.data?.message || 'Usuário ou senha incorretos.')
     } finally {
       setLoading(false)
     }
@@ -57,7 +71,9 @@ export default function LoginPage() {
         </h2>
 
         {error && <p className="text-red-600 text-sm mb-4 text-center">{error}</p>}
-        {success && <p className="text-green-600 text-sm mb-4 text-center">{success}</p>}
+        {success && (
+          <p className="text-green-600 text-sm mb-4 text-center">{success}</p>
+        )}
 
         <input
           type="email"
