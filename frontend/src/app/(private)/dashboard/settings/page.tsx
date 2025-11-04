@@ -1,3 +1,5 @@
+"use client";
+
 import UserProfileManager from "../../components/UserProfileManager";
 
 export default function SettingsPage() {
