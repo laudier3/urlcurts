@@ -1,21 +1,22 @@
-// src/app/layout.tsx
 import './globals.css';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'UrlCurt',
-  description: 'Transforme links longos em URLs curtas com segurança, praticidade e estatísticas em tempo real.',
+  description:
+    'Transforme links longos em URLs curtas com segurança, praticidade e estatísticas em tempo real.',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="pt-BR">
-      <body className="bg-gray-50 antialiased">
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body className="bg-gray-50 antialiased" suppressHydrationWarning>
         {children}
       </body>
     </html>
   );
 }
-
-
-

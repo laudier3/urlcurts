@@ -30,87 +30,87 @@ export default function RegisterPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setSuccess('')
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError('');
+  setSuccess('');
 
-    // Validação de idade
-    const birthDate = new Date(formData.birthDate)
-    const today = new Date()
-    const age = today.getFullYear() - birthDate.getFullYear()
-    const monthDiff = today.getMonth() - birthDate.getMonth()
-    const dayDiff = today.getDate() - birthDate.getDate()
-    const hasHadBirthdayThisYear = monthDiff > 0 || (monthDiff === 0 && dayDiff >= 0)
-    const finalAge = hasHadBirthdayThisYear ? age : age - 1
+  // Validação de idade
+  const birthDate = new Date(formData.birthDate);
+  const today = new Date();
+  const age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  const dayDiff = today.getDate() - birthDate.getDate();
+  const hasHadBirthdayThisYear = monthDiff > 0 || (monthDiff === 0 && dayDiff >= 0);
+  const finalAge = hasHadBirthdayThisYear ? age : age - 1;
 
-    if (isNaN(birthDate.getTime())) {
-      setError('Por favor, insira uma data de nascimento válida.')
-      return
-    }
-
-    if (finalAge < 18) {
-      setError('Você precisa ter pelo menos 18 anos para se cadastrar.')
-      return
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setError('As senhas não coincidem.')
-      return
-    }
-
-    try {
-      setLoading(true)
-
-      const payload = {
-        name: formData.name.trim(),
-        age: finalAge.toString(),
-        email: formData.email.trim(),
-        phone: formData.phone.trim(),
-        access: formData.access,
-        image: formData.image || 'https://i.pravatar.cc/150',
-        password: formData.password.trim(),
-      }
-
-      const response = await api.post('/register', payload, { withCredentials: true })
-      const data = response.data
-
-      // Tratamento de email ou telefone já cadastrado
-      if (data.error) {
-        if (data.error.toLowerCase().includes('email')) {
-          setError('Este email já está cadastrado.')
-          return
-        }
-        if (data.error.toLowerCase().includes('telefone') || data.error.toLowerCase().includes('phone')) {
-          setError('Este número de telefone já está cadastrado.')
-          return
-        }
-        setError(data.error)
-        return
-      }
-
-      // Confirmação de sucesso
-      if (!data || data.success === false) {
-        throw new Error(data.msg || 'Falha ao cadastrar usuário no servidor.')
-      }
-
-      setSuccess(data.msg || 'Usuário cadastrado com sucesso! Redirecionando para login...')
-      setTimeout(() => router.push('/login'), 2000)
-    } catch (err: unknown) {
-      console.error('❌ Erro ao cadastrar:', err)
-
-      if (err instanceof Error) {
-        setError(err.message)
-      } else if (typeof err === 'object' && err && 'response' in err) {
-        const apiError = err as { response?: { data?: { msg?: string; error?: string } } }
-        setError(apiError.response?.data?.msg || apiError.response?.data?.error || 'Erro inesperado.')
-      } else {
-        setError('Erro inesperado. Tente novamente mais tarde.')
-      }
-    } finally {
-      setLoading(false)
-    }
+  if (isNaN(birthDate.getTime())) {
+    setError('Por favor, insira uma data de nascimento válida.');
+    return;
   }
+
+  if (finalAge < 18) {
+    setError('Você precisa ter pelo menos 18 anos para se cadastrar.');
+    return;
+  }
+
+  if (formData.password !== formData.confirmPassword) {
+    setError('As senhas não coincidem.');
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    const payload = {
+      name: formData.name.trim(),
+      age: finalAge.toString(),
+      email: formData.email.trim(),
+      phone: formData.phone.trim(),
+      access: formData.access,
+      image: formData.image || 'https://i.pravatar.cc/150',
+      password: formData.password.trim(),
+    };
+
+    const response = await api.post('/register', payload, { withCredentials: true });
+    const data = response.data;
+
+    if (!data || data.success === false) {
+      throw new Error(data.msg || 'Falha ao cadastrar usuário no servidor.');
+    }
+
+    setSuccess(data.msg || 'Usuário cadastrado com sucesso! Redirecionando para login...');
+    setTimeout(() => router.push('/login'), 2000);
+  } catch (err: any) {
+    console.error('❌ Erro ao cadastrar:', err);
+
+    // 🔍 Verifica se a resposta veio do backend
+    if (err.response) {
+      const status = err.response.status;
+      const msg = err.response.data?.msg || err.response.data?.error || '';
+
+      // 🔹 Caso específico: email duplicado
+      if (status === 400 && /email/i.test(msg)) {
+        setError('Já existe um usuário com este e-mail cadastrado.');
+        return;
+      }
+
+      // 🔹 Caso específico: telefone duplicado
+      if (status === 400 && (/telefone/i.test(msg) || /phone/i.test(msg))) {
+        setError('Já existe um usuário com este número de telefone cadastrado.');
+        return;
+      }
+
+      // 🔹 Outros erros do backend
+      setError(msg || 'Erro ao cadastrar usuário. Tente novamente.');
+    } else {
+      // 🔹 Erros genéricos de rede ou inesperados
+      setError('Erro inesperado. Tente novamente mais tarde.');
+    }
+  } finally {
+    setLoading(false);
+  }
+};  
 
   const maxDate = new Date().toISOString().split('T')[0]
 
