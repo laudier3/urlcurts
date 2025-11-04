@@ -1,6 +1,5 @@
-'use client'
-
-import { ReactNode } from 'react'
+// src/app/(private)/layout.tsx
+import { ReactNode } from "react";
 
 export default function PrivateLayout({ children }: { children: ReactNode }) {
   return (
@@ -9,5 +8,5 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
         {children}
       </body>
     </html>
-  )
+  );
 }

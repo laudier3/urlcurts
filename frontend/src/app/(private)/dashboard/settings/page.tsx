@@ -1,9 +1,9 @@
-"use client"; // garante renderização apenas no cliente
+"use client"; // garante que tudo abaixo é client
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
 
-// Importa UserProfileManager somente no cliente, sem SSR
+// Impede SSR do UserProfileManager
 const UserProfileManager = dynamic(
   () => import("../../components/UserProfileManager"),
   { ssr: false }
@@ -12,12 +12,10 @@ const UserProfileManager = dynamic(
 export default function SettingsPage() {
   const [showModal, setShowModal] = useState(true);
 
-  // Evita renderizar nada se o modal estiver fechado
   if (!showModal) return null;
 
   return (
     <div className="p-8">
-      {/* closeModal definido inline no cliente */}
       <UserProfileManager closeModal={() => setShowModal(false)} />
     </div>
   );
