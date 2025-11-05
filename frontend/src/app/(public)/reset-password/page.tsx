@@ -130,3 +130,6 @@ export default function ResetPasswordPage() {
     </div>
   )
 }
+
+// 👇 Adicione isso no final do arquivo
+export const dynamic = 'force-dynamic';
