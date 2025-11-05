@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 //esperando a url via variavel de ambiente
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL2;
 
 export const api = axios.create({
   baseURL: BASE_URL,
