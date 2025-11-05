@@ -6,6 +6,8 @@ import { useState } from 'react'
 import { Loader2, Eye, EyeOff } from 'lucide-react'
 import { api } from '../../lib/api'
 
+const dbUrl = process.env.NEXT_PUBLIC_YOUR_URL;
+
 export default function LoginPage() {
   const router = useRouter()
   const [formData, setFormData] = useState({ email: '', password: '' })
@@ -13,6 +15,8 @@ export default function LoginPage() {
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+
+  //console.log(dbUrl)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -34,7 +38,7 @@ export default function LoginPage() {
         { withCredentials: true }
       )
 
-      console.log('🔍 Resposta da API:', response.data)
+      //console.log('🔍 Resposta da API:', response.data)
 
       // ✅ Checagem segura de sucesso
       const { success, token, auth, message } = response.data || {}
