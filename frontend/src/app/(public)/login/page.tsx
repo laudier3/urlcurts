@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Loader2, Eye, EyeOff } from 'lucide-react'
 import { api } from '../../lib/api'
+import Cookies from 'js-cookie' // Importa a biblioteca para trabalhar com cookies
 
 const dbUrl = process.env.NEXT_PUBLIC_YOUR_URL;
 
@@ -15,8 +16,6 @@ export default function LoginPage() {
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-
-  //console.log(dbUrl)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -29,6 +28,7 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
+      // Requisição à API de login
       const response = await api.post(
         '/login',
         {
@@ -38,24 +38,22 @@ export default function LoginPage() {
         { withCredentials: true }
       )
 
-      //console.log('🔍 Resposta da API:', response.data)
+      // Checagem de sucesso
+      const { success, token, message } = response.data || {}
 
-      // ✅ Checagem segura de sucesso
-      const { success, token, auth, message } = response.data || {}
-
-      if (success || auth === true || token) {
-        // ✅ Armazena o token no localStorage (ou cookie, se preferir)
-        /*if (token) {
-          localStorage.setItem('authToken', token)
-        }*/
+      if (success || token) {
+        // Armazenando o token nos cookies (em vez de localStorage)
+        if (token) {
+          Cookies.set('token', token, { expires: 7 }) // Define o cookie para expirar em 7 dias
+        }
 
         setSuccess(message || 'Login realizado com sucesso!')
-        setTimeout(() => router.push('/dashboard'), 1200)
+        setTimeout(() => router.push('/dashboard'), 1200) // Redireciona para o dashboard
       } else {
         setError(message || 'Usuário ou senha incorretos.')
       }
     } catch (err: any) {
-      console.error('❌ Erro no login:', err)
+      console.error('Erro ao realizar login:', err)
       setError(err.response?.data?.message || 'Usuário ou senha incorretos.')
     } finally {
       setLoading(false)
