@@ -6,8 +6,6 @@ const BASE_URL = process.env.NEXT_PUBLIC_YOUR_URL;
 export const api = axios.create({
   baseURL: BASE_URL,
   timeout: 10000,
-  withCredentials: true,
-  /*headers: {
-    'Content-Type': 'application/json',
-  },*/
+  withCredentials: true,   // essencial para enviar cookies
+  headers: { 'Content-Type': 'application/json' },
 });
