@@ -5,9 +5,6 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Loader2, Eye, EyeOff } from 'lucide-react'
 import { api } from '../../lib/api'
-import Cookies from 'js-cookie' // Importa a biblioteca para trabalhar com cookies
-
-const dbUrl = process.env.NEXT_PUBLIC_YOUR_URL;
 
 export default function LoginPage() {
   const router = useRouter()
@@ -28,27 +25,21 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      // Requisição à API de login
+      // Requisição à API de login (o cookie será criado pelo backend)
       const response = await api.post(
         '/login',
         {
           email: formData.email.trim(),
           password: formData.password.trim(),
         },
-        { withCredentials: true }
+        { withCredentials: true } // necessário para cookies HttpOnly cross-site
       )
 
-      // Checagem de sucesso
-      const { success, token, message } = response.data || {}
+      const { success, message } = response.data || {}
 
-      if (success || token) {
-        // Armazenando o token nos cookies (em vez de localStorage)
-        if (token) {
-          Cookies.set('token', token, { expires: 7 }) // Define o cookie para expirar em 7 dias
-        }
-
+      if (success) {
         setSuccess(message || 'Login realizado com sucesso!')
-        setTimeout(() => router.push('/dashboard'), 1200) // Redireciona para o dashboard
+        setTimeout(() => router.push('/dashboard'), 1200)
       } else {
         setError(message || 'Usuário ou senha incorretos.')
       }
@@ -87,7 +78,6 @@ export default function LoginPage() {
           className="w-full border border-gray-300 rounded px-4 py-2 mb-4 text-gray-900 focus:ring-2 focus:ring-indigo-500"
         />
 
-        {/* Campo de senha com ícone de olho */}
         <div className="relative mb-4">
           <input
             type={showPassword ? 'text' : 'password'}
