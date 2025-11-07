@@ -150,18 +150,14 @@ router.post('/api/login', async (req: any, res: any) => {
     if (!match) return res.status(401).json({ error: 'Usuário ou senha incorretos' });
 
     const token = generateToken({ id: user.id, email: user.email });
-    /*res.cookie('token', token, {
-      httpOnly: true,
-      secure: false, // true em produção com HTTPS
-      sameSite: 'lax',
-      maxAge: 3600000,
-    });*/
+    
     res.cookie('token', token, {
       httpOnly: true,
-      secure: true, // true em prod
-      sameSite: 'none', // ou 'none' se domínios diferentes
-      maxAge: 3600000, // 1 hora
-    });
+      secure: process.env.NODE_ENV === 'production', // true em produção
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      domain: process.env.NODE_ENV === 'production' ? '.urlcurt.site' : undefined,
+      maxAge: 3600000, // 1h
+    });    
 
     res.status(200).json({token: token});
   } catch (err) {
@@ -225,6 +221,8 @@ router.get("/api/me", authMiddleware, async (req: AuthRequest, res:any) => {
         email: true,
         phone: true,
         age: true,
+        image: true,
+        access: true,
       },
     });
 
@@ -240,7 +238,7 @@ router.get("/api/me", authMiddleware, async (req: AuthRequest, res:any) => {
 // Atualizar perfil completo do usuário autenticado
 router.put('/api/me', authMiddleware, async (req: AuthRequest, res: any) => {
   const userId = req.userId!;
-  const { name, email, phone, age } = req.body;
+  const { name, email, phone, age, image, access } = req.body;
 
   try {
     const updated = await prisma.user.update({
@@ -249,6 +247,8 @@ router.put('/api/me', authMiddleware, async (req: AuthRequest, res: any) => {
         name,
         email,
         phone,
+        image,
+        access,
         age: age ? Number(age) : null,
       },
       select: {
@@ -257,6 +257,8 @@ router.put('/api/me', authMiddleware, async (req: AuthRequest, res: any) => {
         email: true,
         phone: true,
         age: true,
+        image: true,
+        access: true,
       },
     });
 
