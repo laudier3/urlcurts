@@ -7,7 +7,7 @@ export const api = axios.create({
   baseURL: BASE_URL,
   timeout: 10000,
   withCredentials: true,
-  headers: {
+  /*headers: {
     'Content-Type': 'application/json',
-  },
+  },*/
 });

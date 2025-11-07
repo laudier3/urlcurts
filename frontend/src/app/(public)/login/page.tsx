@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -6,17 +6,12 @@ import { useState } from 'react'
 import { Loader2, Eye, EyeOff } from 'lucide-react'
 import { api } from '../../lib/api'
 
-const dbUrl = process.env.NEXT_PUBLIC_YOUR_URL;
-
 export default function LoginPage() {
   const router = useRouter()
   const [formData, setFormData] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-
-  //console.log(dbUrl)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -25,10 +20,10 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    setSuccess('')
     setLoading(true)
 
     try {
+      // Faz login, backend envia cookie httpOnly
       const response = await api.post(
         '/login',
         {
@@ -38,25 +33,11 @@ export default function LoginPage() {
         { withCredentials: true }
       )
 
-      //console.log('🔍 Resposta da API:', response.data)
-
-      // ✅ Checagem segura de sucesso
-      const { success, token, auth, message } = response.data || {}
-
-      if (success || auth === true || token) {
-        // ✅ Armazena o token no localStorage (ou cookie, se preferir)
-        if (token) {
-          localStorage.setItem('authToken', token)
-        }
-
-        setSuccess(message || 'Login realizado com sucesso!')
-        setTimeout(() => router.push('/dashboard'), 1200)
-      } else {
-        setError(message || 'Usuário ou senha incorretos.')
-      }
+      // ✅ Se a requisição não lançar erro, login foi bem-sucedido
+      router.push('/dashboard')
     } catch (err: any) {
       console.error('❌ Erro no login:', err)
-      setError(err.response?.data?.message || 'Usuário ou senha incorretos.')
+      setError(err.response?.data?.error || 'Usuário ou senha incorretos.')
     } finally {
       setLoading(false)
     }
@@ -75,9 +56,6 @@ export default function LoginPage() {
         </h2>
 
         {error && <p className="text-red-600 text-sm mb-4 text-center">{error}</p>}
-        {success && (
-          <p className="text-green-600 text-sm mb-4 text-center">{success}</p>
-        )}
 
         <input
           type="email"
@@ -89,7 +67,6 @@ export default function LoginPage() {
           className="w-full border border-gray-300 rounded px-4 py-2 mb-4 text-gray-900 focus:ring-2 focus:ring-indigo-500"
         />
 
-        {/* Campo de senha com ícone de olho */}
         <div className="relative mb-4">
           <input
             type={showPassword ? 'text' : 'password'}
