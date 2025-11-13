@@ -120,7 +120,7 @@ const ContactPage: React.FC = () => {
       <div
         className="flex items-center justify-center min-h-screen px-4"
         style={{
-          background: 'linear-gradient(135deg, #4F46E5 0%, #6D28D9 100%)',
+          background: '',
         }}
       >
         <div
@@ -202,7 +202,7 @@ const ContactPage: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg transition duration-300"
+              className="w-full bg-indigo-500 hover:bg-indigo-700 text-white py-3 rounded-lg transition duration-300"
             >
               Enviar
             </button>
@@ -222,6 +222,17 @@ const ContactPage: React.FC = () => {
           </form>
         </div>
       </div>
+      <style jsx>{`
+        .background {
+            background: radial-gradient(
+              circle at 20% 20%,
+              #1e1b4b,
+              #0f172a,
+              #020617
+            );
+            filter: brightness(1.2) saturate(1.1);
+          }
+      `}</style>
     </>
   );
 };
@@ -261,3 +272,5 @@ const closeButtonStyle: React.CSSProperties = {
   borderRadius: '5px',
   cursor: 'pointer',
 };
+
+
