@@ -84,7 +84,7 @@ export default function LandingPage() {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
   
       // Estrelas
-      for (let star of stars) {
+      for (const star of stars) {
         star.z -= 2;
         if (star.z <= 0) star.z = canvas.width;
   
@@ -127,7 +127,18 @@ export default function LandingPage() {
         <div className="logo" onClick={() => router.push('/')}>
           UrlCurt
         </div>
-
+        <a
+          href="https://hilltopads.com/pt?ref=329233"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="https://static.hilltopads.com/other/banners/pub/huge_income/728x90.gif?v=1762961392"
+            alt="Anúncio HilltopAds"
+            width={728}
+            height={90}
+          />
+        </a>
         <button
           className="hamburger"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -239,6 +250,10 @@ export default function LandingPage() {
         /* 🔹 Esconde o botão hambúrguer no desktop */
 .hamburger {
   display: none;
+  @media (max-width: 768px) {
+    font-size: 1rem;
+    margin-left: 8px;
+  }
 }
 
 /* 🔹 Mostra o menu normalmente em desktop */
@@ -304,7 +319,7 @@ export default function LandingPage() {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 1rem 2rem;
+          padding: 0rem 2rem;
           background: rgba(15, 23, 42, 0.85);
           backdrop-filter: blur(10px);
           border-bottom: 1px solid rgba(99, 102, 241, 0.2);
@@ -316,10 +331,26 @@ export default function LandingPage() {
 
         .logo {
           font-size: 1.8rem;
-          font-weight: 700;
-          color: white;
+          font-weight: 800;
+          background: linear-gradient(90deg, #00c6ff, #0072ff);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          letter-spacing: 1.5px;
+          text-transform: uppercase;
+          font-family: "Montserrat", sans-serif;
           cursor: pointer;
+          transition: all 0.3s ease;
+
+          &:hover {
+            transform: scale(1.05);
+            filter: brightness(1.3);
+          }
+
+          @media (max-width: 768px) {
+            font-size: 1rem;
+          }
         }
+
 
         .nav-links {
           display: flex;
