@@ -58,12 +58,12 @@ const SobrePage: React.FC = () => {
             usar os materiais para qualquer finalidade comercial ou para exibição pública (comercial ou não comercial); 
             tentar descompilar ou fazer engenharia reversa de qualquer software contido no site urlcurt; 
             remover quaisquer direitos autorais ou outras notações de propriedade dos materiais; ou 
-            transferir os materiais para outra pessoa ou 'espelhe' os materiais em qualquer outro servidor.
+            transferir os materiais para outra pessoa ou espelhe os materiais em qualquer outro servidor.
             Esta licença será automaticamente rescindida se você violar alguma dessas restrições e poderá ser rescindida por urlcurt a qualquer momento. Ao encerrar a visualização desses materiais ou após o término desta licença, você deve apagar todos os materiais baixados em sua posse, seja em formato eletrónico ou impresso.
           </p>
           <h2>3. Isenção de responsabilidade</h2>
           <p>
-            Os materiais no site da urlcurt são fornecidos 'como estão'. urlcurt não oferece garantias, expressas ou implícitas, e, por este meio, isenta e nega todas as outras garantias, incluindo, sem limitação, garantias implícitas ou condições de comercialização, adequação a um fim específico ou não violação de propriedade intelectual ou outra violação de direitos.
+            Os materiais no site da urlcurt são fornecidos como estão. urlcurt não oferece garantias, expressas ou implícitas, e, por este meio, isenta e nega todas as outras garantias, incluindo, sem limitação, garantias implícitas ou condições de comercialização, adequação a um fim específico ou não violação de propriedade intelectual ou outra violação de direitos.
             Além disso, o urlcurt não garante ou faz qualquer representação relativa à precisão, aos resultados prováveis ​​ou à confiabilidade do uso dos materiais em seu site ou de outra forma relacionado a esses materiais ou em sites vinculados a este site.
           </p>
           <h2>4. Limitações</h2>
@@ -81,6 +81,12 @@ const SobrePage: React.FC = () => {
         </main>
 
         <style>{/*`
+          .background: radial-gradient(
+            circle at 20% 20%,
+            #1e1b4b,
+            #0f172a,
+            #020617
+          );
           .content {
             max-width: 800px;
             margin: 120px auto;
