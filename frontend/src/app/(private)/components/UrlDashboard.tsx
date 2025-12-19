@@ -226,7 +226,7 @@ export const UrlManager: React.FC = () => {
         {/* Lista de URLs */}
         <ul className="space-y-4">
   {visibleUrls.map(url => {
-    const shortUrl = `http://localhost:4000/${url.slug}`;
+    const shortUrl = `https://urlcurt.site/${url.slug}`;
     const isExpanded = expandedUrlId === url.id;
     const history = trafficData[url.id];
     const isLoading = loadingTraffic === url.id;
