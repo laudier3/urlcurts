@@ -126,7 +126,7 @@ const UserProfileManager: React.FC<UserProfileManagerProps> = ({ closeModal }) =
       {/* Imagem do usuário e status */}
       <div className="flex items-center gap-4">
         <img
-          src={user.image || "/default-user.png"}
+          src={user.image || "https://cdn-icons-png.flaticon.com/512/7980/7980574.png"}
           alt="Foto do usuário"
           className="w-20 h-20 rounded-full border-2 border-indigo-400 object-cover"
         />
