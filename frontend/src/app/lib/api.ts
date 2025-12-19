@@ -1,7 +1,19 @@
+// lib/api.ts
 import axios from 'axios';
 
+export const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_YOUR_URL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+
+/*import axios from 'axios';
+
 //esperando a url via variavel de ambiente
-const BASE_URL = process.env.NEXT_PUBLIC_YOUR_URL || "http://localhost:4000/api";
+const BASE_URL = process.env.NEXT_PUBLIC_YOUR_URL!;
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -9,3 +21,4 @@ export const api = axios.create({
   withCredentials: true,   // essencial para enviar cookies
   headers: { 'Content-Type': 'application/json' },
 });
+*/

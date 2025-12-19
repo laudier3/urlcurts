@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 const router = express.Router();
 
 // Criar URL
-router.post('/', authMiddleware, async (req: AuthRequest, res) => {
+router.post('/', authMiddleware, async (req: AuthRequest, res: any) => {
   const { originalUrl, customSlug } = req.body;
   if (!validUrl.isWebUri(originalUrl)) return res.status(400).json({ error: 'URL inválida' });
 
@@ -48,7 +48,7 @@ router.get('/', authMiddleware, async (req: AuthRequest, res) => {
 });
 
 // Atualizar URL
-router.put('/:id', authMiddleware, async (req: AuthRequest, res) => {
+router.put('/:id', authMiddleware, async (req: AuthRequest, res: any) => {
   const id = Number(req.params.id);
   const { originalUrl, shortSlug } = req.body;
   if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
