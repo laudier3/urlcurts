@@ -378,7 +378,8 @@ export const UrlManager: React.FC = () => {
                   <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-gray-900 p-6 text-left align-middle shadow-xl transition-all">
                     <Dialog.Title className="text-lg font-medium text-white">Configurações do Usuário</Dialog.Title>
                     <div className="mt-4">
-                      <UserProfileManager />
+                    <UserProfileManager closeModal={() => setUserModalOpen(false)} />
+
                     </div>
                     <div className="mt-4 flex justify-end">
                       <button onClick={() => setUserModalOpen(false)} className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">Fechar</button>
