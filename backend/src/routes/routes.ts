@@ -22,6 +22,21 @@ export async function sendSms(phone: string, message: string) {
     }
 }
 
+/**
+ * Normaliza IP (remove IPv6 ::ffff:)
+ */
+function normalizeIp(ip?: string | string[]): string | null {
+  if (!ip) return null;
+
+  const rawIp = Array.isArray(ip) ? ip[0] : ip;
+
+  if (rawIp.startsWith('::ffff:')) {
+    return rawIp.replace('::ffff:', '');
+  }
+
+  return rawIp;
+}
+
 // Configuração do Nodemailer
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -80,29 +95,6 @@ router.post('/api/register', async (req: any, res: any) => {
     return res.status(500).json({ error: 'Erro inesperado ao cadastrar usuário.' })
   }
 })
-
-// Recuperação de senha via telefone
-/*router.post('/api/recover-password', async (req: any, res: any) => {
-  const { phone } = req.body;
-  if (!phone) return res.status(400).json({ error: 'Telefone é obrigatório' });
-
-  try {
-    const user = await prisma.user.findUnique({ where: { phone } });
-    if (!user) return res.status(404).json({ error: 'Usuário não encontrado com esse telefone' });
-
-    // Geração de token temporário
-    const resetToken = generateToken({ id: user.id, email: user.email }); // Agora passamos o email
-    const resetLink = `${process.env.BASE_URL}/reset-password?token=${resetToken}`;
-
-    // Enviar o link de recuperação por SMS
-    await sendSms(phone, `Clique no link para redefinir sua senha: ${resetLink}`);
-    
-    res.json({ message: 'Link de recuperação enviado por SMS' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Erro ao enviar link de recuperação' });
-  }
-});*/
 
 // Recuperação de senha via email
 router.post('/api/recover-password', async (req: any, res: any) => {
@@ -509,42 +501,57 @@ router.delete('/api/urls/:id', authMiddleware, async (req: AuthRequest, res: any
   }
 });
 
+/**
+ * Rota pública da URL encurtada
+ * Rastreia IP + localização + incrementa visitas
+ */
 router.get('/:slug', async (req: any, res: any) => {
-  const slug = req.params.slug;
-
-  const ip =
-    req.headers['x-forwarded-for']?.toString()?.split(',')[0] ||
-    req.socket.remoteAddress ||
-    '';
-
-  const geo = geoip.lookup(ip);
+  const { slug } = req.params;
 
   try {
-    const url = await prisma.url.findUnique({ where: { slug } });
-    if (!url) return res.status(404).send('URL não encontrada');
+    // 🔹 Captura IP real (proxy / produção)
+    const ip = normalizeIp(
+      req.headers['x-forwarded-for'] ||
+      req.socket.remoteAddress
+    );
 
-    // Salva o acesso com geolocalização
+    // 🔹 Geolocalização
+    const geo = ip ? geoip.lookup(ip) : null;
+
+    // 🔹 Busca URL
+    const url = await prisma.url.findUnique({
+      where: { slug },
+    });
+
+    if (!url) {
+      return res.status(404).send('URL não encontrada');
+    }
+
+    // 🔹 Salva visita (log detalhado)
     await prisma.visit.create({
       data: {
         urlId: url.id,
-        country: geo?.country || null,
-        region: geo?.region || null,
-        city: geo?.city || null,
-        ip: ip,
+        ip,
+        country: geo?.country ?? null,
+        region: geo?.region ?? null,
+        city: geo?.city ?? null,
         timestamp: new Date(),
       },
     });
 
-    // Incrementa o contador de visitas
+    // 🔹 Incrementa contador rápido
     await prisma.url.update({
-      where: { slug },
-      data: { visits: { increment: 1 } },
+      where: { id: url.id },
+      data: {
+        visits: { increment: 1 },
+      },
     });
 
+    // 🔹 Redireciona
     return res.redirect(url.original);
-  } catch (err) {
-    console.error(err);
-    return res.status(500).send('Erro no servidor');
+  } catch (error) {
+    console.error('Erro ao rastrear visita:', error);
+    return res.status(500).send('Erro interno do servidor');
   }
 });
 
@@ -552,20 +559,21 @@ router.get('/api/urls/:id/traffic', async (req: any, res: any) => {
   try {
     const urlId = Number(req.params.id);
 
-    const visits = await prisma.visit.groupBy({
-      by: ['timestamp'],
-      where: { urlId },
-      _count: {
-        timestamp: true,
-      },
-      orderBy: {
-        timestamp: 'asc',
-      },
-    });
+    const visits = await prisma.$queryRaw<
+      { date: Date; count: bigint }[]
+    >`
+      SELECT 
+        DATE("timestamp") as date,
+        COUNT(*) as count
+      FROM "Visit"
+      WHERE "urlId" = ${urlId}
+      GROUP BY DATE("timestamp")
+      ORDER BY DATE("timestamp") ASC
+    `;
 
-    const result = visits.map((v) => ({
-      date: v.timestamp.toISOString().split('T')[0], // yyyy-mm-dd
-      count: v._count ? Number(v._count.timestamp) : 0,
+    const result = visits.map(v => ({
+      date: v.date.toISOString().split('T')[0],
+      count: Number(v.count),
     }));
 
     res.json(result);

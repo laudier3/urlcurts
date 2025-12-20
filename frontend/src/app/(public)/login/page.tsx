@@ -7,7 +7,7 @@ import { Loader2, Eye, EyeOff } from 'lucide-react'
 import { api } from '../../lib/api'
 import Cookies from 'js-cookie' // Importa a biblioteca para trabalhar com cookies
 
-const dbUrl = process.env.NEXT_PUBLIC_YOUR_URL;
+//const dbUrl = process.env.NEXT_PUBLIC_YOUR_URL;
 
 export default function LoginPage() {
   const router = useRouter()
