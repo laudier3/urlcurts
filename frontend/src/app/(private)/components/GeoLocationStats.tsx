@@ -1,15 +1,19 @@
-"use client";
+import React, { useEffect, useState } from 'react';
+import { Box, Typography, CircularProgress, Alert } from '@mui/material';
+import { api } from '@/app/lib/api';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Cell,
+} from 'recharts';
 
-import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, CircleMarker, Tooltip } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import { api } from "@/app/lib/api";
-
-interface TrafficLocation {
-  lat: number;
-  lon: number;
-  city: string;
-  country: string;
+interface TrafficEntry {
+  date: string;
   count: number;
 }
 
@@ -18,46 +22,86 @@ interface Props {
 }
 
 export const TrafficStats: React.FC<Props> = ({ urlId }) => {
-  const [locations, setLocations] = useState<TrafficLocation[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [trafficData, setTrafficData] = useState<TrafficEntry[]>([]);
+  const [loadingTraffic, setLoadingTraffic] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchLocations = async () => {
-      setLoading(true);
+    const fetchTraffic = async () => {
       try {
-        const res = await api.get<TrafficLocation[]>(`/urls/${urlId}/traffic/locations`);
-        setLocations(res.data);
+        const res = await api.get<TrafficEntry[]>(`/urls/${urlId}/traffic`, { withCredentials: true });
+        const formatted = res.data.map(d => ({
+          date: new Date(d.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+          count: d.count,
+        }));
+        setTrafficData(formatted);
       } catch (err) {
-        console.error("Erro ao buscar localizações", err);
+        console.error(err);
+        setError('Erro ao buscar dados de tráfego');
       } finally {
-        setLoading(false);
+        setLoadingTraffic(false);
       }
     };
+    fetchTraffic();
+  }, [urlId]);  
 
-    fetchLocations();
-  }, [urlId]);
+  if (loadingTraffic) {
+    return (
+      <Box display="flex" justifyContent="center" mt={2}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
-  if (loading) return <p className="text-gray-300">Carregando localizações...</p>;
-  if (!locations.length) return <p className="text-gray-300">Nenhum acesso registrado ainda.</p>;
+  if (error) {
+    return <Alert severity="error">{error}</Alert>;
+  }
 
   return (
-    <MapContainer center={[20, 0]} zoom={2} className="w-full h-64 rounded-lg">
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      {locations.map((loc, idx) => (
-        <CircleMarker
-          key={idx}
-          center={[loc.lat, loc.lon]}
-          radius={Math.max(5, Math.log(loc.count + 1) * 3)}
-          fillColor="blue"
-          color="white"
-          weight={1}
-          fillOpacity={0.6}
-        >
-          <Tooltip>
-            {loc.city}, {loc.country} ({loc.count} visita{loc.count > 1 ? "s" : ""})
-          </Tooltip>
-        </CircleMarker>
-      ))}
-    </MapContainer>
+    <Box mt={4}>
+      <Typography variant="h6" gutterBottom>
+        Tráfego da URL
+      </Typography>
+
+      <Box mt={6} className="bg-white rounded-xl shadow p-6">
+        <div className="flex items-center justify-between mb-4">
+          <Typography variant="h6">Visitas Recentes</Typography>
+          <Typography variant="body2" color="textSecondary">
+            Últimos dias
+          </Typography>
+        </div>
+
+        {trafficData.length === 0 ? (
+          <Typography color="textSecondary">Sem dados de tráfego.</Typography>
+        ) : (
+          <Box height={300}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={trafficData}
+                margin={{ top: 10, right: 20, bottom: 0, left: 0 }}
+              >
+                <CartesianGrid strokeDasharray="4 4" stroke="#e5e7eb" />
+                <XAxis dataKey="date" axisLine={false} tickLine={false} />
+                <YAxis axisLine={false} tickLine={false} />
+                <Tooltip />
+                <Bar
+                  dataKey="count"
+                  radius={[6, 6, 0, 0]}
+                  barSize={20}
+                  fill="#3b82f6"
+                >
+                  {trafficData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={index % 2 === 0 ? '#93c5fd' : '#3b82f6'}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </Box>
+        )}
+      </Box>
+    </Box>
   );
 };
