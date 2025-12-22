@@ -25,6 +25,8 @@ const UserProfileManager: React.FC<UserProfileManagerProps> = ({ closeModal }) =
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loggingOut, setLoggingOut] = useState(false);
+
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -83,16 +85,20 @@ const UserProfileManager: React.FC<UserProfileManagerProps> = ({ closeModal }) =
   }  
 
   const handleLogout = async () => {
+    setLoggingOut(true);
+    setError("");
+  
     try {
       await api.post("/logout", {}, { withCredentials: true });
-      clearAllCookies()
-      window.location.reload()
+      clearAllCookies();
+      window.location.href = "/login";
     } catch (err) {
       console.error("Erro ao sair:", err);
-    } finally {
-      window.location.href = "/login";
+      setError("Erro ao sair da conta.");
+      setLoggingOut(false);
     }
   };
+  
 
   if (loading) return <LoadingOverlay message="Carregando perfil..." />;
   if (error) return <p className="text-center mt-10 text-red-400">{error}</p>;
@@ -194,9 +200,12 @@ const UserProfileManager: React.FC<UserProfileManagerProps> = ({ closeModal }) =
 
             <button
               onClick={handleLogout}
-              className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition"
+              disabled={loggingOut}
+              className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition
+                        flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Sair da Conta
+              {loggingOut && <Loader2 className="animate-spin w-5 h-5" />}
+              {loggingOut ? "Saindo..." : "Sair da Conta"}
             </button>
           </>
         )}
