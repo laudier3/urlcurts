@@ -82,6 +82,7 @@ const UserProfileManager: React.FC<UserProfileManagerProps> = ({ closeModal }) =
       console.error("Erro ao sair:", err);
     } finally {
       window.location.href = "/login";
+      window.location.reload()
     }
   };
 
@@ -183,12 +184,12 @@ const UserProfileManager: React.FC<UserProfileManagerProps> = ({ closeModal }) =
               Editar Perfil
             </button>
 
-            {/*<button
+            <button
               onClick={handleLogout}
               className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition"
             >
               Sair da Conta
-            </button>*/}
+            </button>
           </>
         )}
       </div>

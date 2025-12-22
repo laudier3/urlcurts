@@ -44,7 +44,7 @@ export default function LoginPage() {
       if (success || token) {
         // Armazenando o token nos cookies (em vez de localStorage)
         if (token) {
-          Cookies.set('token', token, { expires: 7 }) // Define o cookie para expirar em 7 dias
+          Cookies.set('token', token, { expires: 1 }) // Define o cookie para expirar em 7 dias
         }
 
         setSuccess(message || 'Login realizado com sucesso!')

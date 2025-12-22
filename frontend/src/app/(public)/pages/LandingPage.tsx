@@ -8,6 +8,7 @@ import AboutSection from './AboutSection';
 import CallToAction from './CallToAction';
 import ArticlesSection from './ArticlesSection';
 import { FloatingShare } from '../components/FloatingShare'; 
+import { api } from '@/app/lib/api';
 //import "./LoadingSpinner.css"
 
 
@@ -105,9 +106,20 @@ const LandingPage: React.FC<Props> = ({ onLoginClick, onRegisterClick, onSobreCl
   };
 
   // Handler para logout
-  const handleLogout = () => {
+  /*const handleLogout = () => {
     setIsLoggedIn(false);
-  };
+  };*/
+
+  const handleLogout = async () => {
+      try {
+        await api.post("/logout", {}, { withCredentials: true });
+        window.location.reload()
+      } catch (err) {
+        console.error("Erro ao sair:", err);
+      } finally {
+        window.location.href = "/login";
+      }
+    };
 
   useEffect(() => {
     const canvas = canvasRef.current!;
