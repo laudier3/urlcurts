@@ -78,11 +78,11 @@ const UserProfileManager: React.FC<UserProfileManagerProps> = ({ closeModal }) =
   const handleLogout = async () => {
     try {
       await api.post("/logout", {}, { withCredentials: true });
+      window.location.reload()
     } catch (err) {
       console.error("Erro ao sair:", err);
     } finally {
       window.location.href = "/login";
-      window.location.reload()
     }
   };
 
