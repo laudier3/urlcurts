@@ -12,6 +12,15 @@ Um painel administrativo moderno, responsivo e escalável para gerenciamento de 
 
 ---
 
+## 🔗 Demo / Acesso ao Projeto
+
+👉 **Acesse o dashboard online:**  
+🌐 https://urlcurt.com.br
+
+> O link acima permite visualizar o layout e a navegação do painel em tempo real.
+
+---
+
 ## ✨ Funcionalidades
 
 - 📦 **Gerenciamento de Produtos**  
@@ -43,4 +52,3 @@ Um painel administrativo moderno, responsivo e escalável para gerenciamento de 
 ---
 
 ## 📁 Estrutura do Projeto
-
