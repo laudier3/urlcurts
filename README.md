@@ -1,42 +1,54 @@
-# UrlCurt
-**Encurtador de URLs moderno, seguro e com monitoramento em tempo real**
+# 🛍️ Ecommerce Dashboard
 
-## 🚀 Visão Geral
-O **UrlCurt** é uma plataforma de encurtamento de URLs criada para facilitar o compartilhamento de links, proporcionando **controle completo**, **estatísticas de tráfego** e uma interface moderna e responsiva.
+Um painel administrativo moderno, responsivo e escalável para gerenciamento de lojas virtuais. Este projeto foi desenvolvido com foco em **usabilidade**, **performance** e **design adaptável**, permitindo que administradores tenham controle total sobre os produtos e operações do ecommerce — seja em desktops ou dispositivos móveis.
 
-Com o UrlCurt, você pode:
-- Transformar URLs longas em links curtos personalizados.
-- Acompanhar cliques e métricas em tempo real.
-- Gerenciar links e perfil de usuário.
-- Operar com segurança usando tokens armazenados em cookies HttpOnly.
-- Desfrutar de uma interface moderna com efeitos visuais interativos.
+---
 
-## 🧩 Funcionalidades Principais
-- **Encurtamento de URLs**: Crie links curtos e personalize slugs.
-- **Dashboard de links**: Visualize estatísticas detalhadas, incluindo cliques, datas e tendências.
-- **Autenticação segura**: Login com tokens armazenados em cookies HttpOnly.
-- **Responsividade completa**: Funciona perfeitamente em dispositivos móveis e desktop.
-- **Interface moderna**: Design clean com tema escuro e efeitos visuais futuristas.
-- **Compartilhamento rápido**: Links prontos para redes sociais e campanhas de marketing.
+## 📸 Preview
 
-## 🏗 Arquitetura do Projeto
-- **Frontend**: Next.js + React, com hooks, efeitos visuais no canvas e navegação dinâmica.
-- **Backend**: Node.js (ou outro stack) para gerenciamento de URLs, autenticação e estatísticas.
-- **Banco de dados**: Estrutura para armazenar URLs, slugs, contagem de cliques, usuários e tokens.
-- **Autenticação**: Cookie seguro (`token`) para verificar se o usuário está logado.
-- **Componentização**: Layout modular com seções reutilizáveis (Features, About, Articles, Footer).
+<img src="https://user-images.githubusercontent.com/674621/191327859-b1c95d59-609b-447e-82c1-60e8fdb79a40.png" alt="Ecommerce Dashboard Preview" width="100%" />
 
-## 🎨 Tecnologias Utilizadas
-- **Next.js** — renderização híbrida (SSG + SSR)
-- **React** — criação de componentes modernos
-- **TypeScript** — tipagem estática para maior segurança
-- **CSS Modules / JSX Styling** — estilização modular e responsiva
-- **Node.js** — backend e API
-- **Cookies HttpOnly** — autenticação segura
-- **Canvas 2D** — efeitos visuais interativos na interface
+> *Imagem meramente ilustrativa. Substitua por screenshots reais do seu projeto quando estiver pronto.*
 
-## 🧪 Instalação e Execução Local
-1. Clone o repositório:
-```bash
-git clone https://github.com/josesantanadeveloper-spec/urlcurts.git
-# urlcurts
+---
+
+## 🔗 Demo / Acesso ao Projeto
+
+👉 **Acesse o dashboard online:**  
+🌐 https://urlcurt.com.br
+
+> O link acima permite visualizar o layout e a navegação do painel em tempo real.
+
+---
+
+## ✨ Funcionalidades
+
+- 📦 **Gerenciamento de Produtos**  
+  Visualize e gerencie produtos com ID, nome e preço em tempo real.
+
+- 📁 **Sidebar Responsiva**  
+  - Estilo drawer no mobile, com botão de menu.
+  - Sidebar fixa no desktop com deslocamento do conteúdo usando `md:ms-58`.
+
+- 📱 **Design Responsivo**  
+  Desenvolvido com **Tailwind CSS** para adaptar-se automaticamente a diferentes dispositivos e tamanhos de tela.
+
+- 🧭 **Navegação Intuitiva**  
+  Interface clara, minimalista e objetiva.
+
+- ⚙️ **Componentes Reutilizáveis**  
+  Criado com arquitetura baseada em componentes usando **React + TypeScript**.
+
+---
+
+## 🚀 Tecnologias Utilizadas
+
+- ⚛️ [React](https://reactjs.org/)
+- 🔥 [Next.js](https://nextjs.org/)
+- 🟦 [TypeScript](https://www.typescriptlang.org/)
+- 💨 [Tailwind CSS](https://tailwindcss.com/)
+- 🎨 [Lucide Icons](https://lucide.dev/)
+
+---
+
+## 📁 Estrutura do Projeto
