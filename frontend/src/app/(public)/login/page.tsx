@@ -48,7 +48,7 @@ export default function LoginPage() {
         }
 
         setSuccess(message || 'Login realizado com sucesso!')
-        setTimeout(() => router.push('/dashboard'), 1200) // Redireciona para o dashboard
+        setTimeout(() => router.push('/dashboard'), 200) // Redireciona para o dashboard
       } else {
         setError(message || 'Usuário ou senha incorretos.')
       }
