@@ -15,16 +15,14 @@ import { FloatingShare } from "./components/FloatingShare";
 const articlesMock = [
   {
     id: 1,
-    title: "Por que usar encurtadores de URL? Vantagens para negócios digitais",
-    summary:
-      "Entenda como URLs curtas aumentam a confiança e a usabilidade nas suas campanhas.",
+    title: "Por que usar encurtadores de URL?",
+    summary: "URLs curtas aumentam conversão e confiança.",
     url: "https://blog.hubspot.com/marketing/",
   },
   {
     id: 2,
-    title: "Os benefícios do encurtamento de URLs para marketing digital",
-    summary:
-      "Como links curtos ajudam a melhorar o engajamento e as métricas das campanhas.",
+    title: "Benefícios do encurtamento de URLs",
+    summary: "Links curtos melhoram métricas.",
     url: "https://neilpatel.com/blog/",
   },
 ];
@@ -32,6 +30,7 @@ const articlesMock = [
 export default function LandingPage() {
   const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -40,431 +39,695 @@ export default function LandingPage() {
     router.push("/login");
   };
 
-  const handleRegister = () => router.push("/register");
-  const handleSobre = () => router.push("/sobre");
-  const handleContato = () => router.push("/contato");
+   const handleSobre = () => {
+    setIsLoggedIn(true);
+    router.push("/sobre");
+  };
 
+   const handlePolitica = () => {
+    setIsLoggedIn(true);
+    router.push("/politica");
+  };
+
+  const handleRegister = () => router.push("/register");
   const handleLogout = () => {
     setIsLoggedIn(false);
     document.cookie = "token=; path=/; max-age=0";
     router.push("/");
   };
 
-  // 🌌 EFEITO DE FUNDO ESPACIAL FUTURISTA
+  /* 🌌 CANVAS (MANTIDO) */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let animationFrameId: number;
+    let frame: number;
 
-    const resizeCanvas = () => {
+    const resize = () => {
       canvas.width = window.innerWidth;
-      canvas.height = Math.max(window.innerHeight, document.body.scrollHeight);
+      canvas.height = window.innerHeight;
     };
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
 
-    // Cria estrelas
-    const stars = Array.from({ length: 400 }, () => ({
+    resize();
+    window.addEventListener("resize", resize);
+
+    const stars = Array.from({ length: 300 }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
       z: Math.random() * canvas.width,
-      o: 0.2 + Math.random() * 0.8,
     }));
 
-    const draw = () => {
-      // Fundo com leve gradiente
-      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      gradient.addColorStop(0, "rgba(10, 10, 30, 0.9)");
-      gradient.addColorStop(1, "rgba(0, 0, 20, 1)");
-      ctx.fillStyle = gradient;
+    const animate = () => {
+      ctx.fillStyle = "#0b1020";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Estrelas
-      for (const star of stars) {
-        star.z -= 2;
-        if (star.z <= 0) star.z = canvas.width;
+      stars.forEach((s) => {
+        s.z -= 2;
+        if (s.z <= 0) s.z = canvas.width;
 
-        const k = 128.0 / star.z;
-        const px = star.x * k + canvas.width / 2;
-        const py = star.y * k + canvas.height / 2;
+        const k = 128 / s.z;
+        const px = s.x * k + canvas.width / 2;
+        const py = s.y * k + canvas.height / 2;
 
-        if (px >= 0 && px <= canvas.width && py >= 0 && py <= canvas.height) {
-          const size = (1 - star.z / canvas.width) * 2.5;
+        if (px >= 0 && py >= 0 && px <= canvas.width && py <= canvas.height) {
+          ctx.fillStyle = "rgba(139,92,246,.8)";
           ctx.beginPath();
-          ctx.fillStyle = `rgba(139, 92, 246, ${star.o})`;
-          ctx.arc(px, py, size, 0, Math.PI * 2);
+          ctx.arc(px, py, 1.5, 0, Math.PI * 2);
           ctx.fill();
         }
-      }
+      });
 
-      animationFrameId = requestAnimationFrame(draw);
+      frame = requestAnimationFrame(animate);
     };
 
-    draw();
+    animate();
 
     return () => {
-      window.removeEventListener("resize", resizeCanvas);
-      cancelAnimationFrame(animationFrameId);
+      cancelAnimationFrame(frame);
+      window.removeEventListener("resize", resize);
     };
-  }, [canvasRef]);
+  }, []);
 
   return (
     <>
       <Head>
-        <title>Encurtador de Link | UrlCurt</title>
-        <meta
-          name="description"
-          content="Transforme links longos em URLs curtas com segurança, praticidade e estatísticas em tempo real."
-        />
+        <title>UrlCurt — Encurte Links</title>
       </Head>
 
-      {/* 🔹 Navbar */}
-      <nav className="navbar">
-        <div className="logo" onClick={() => router.push("/")}>
-          UrlCurt
-        </div>
-        <a
-          href="https://hilltopads.com/pt?ref=329233"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img
-            src="https://static.hilltopads.com/other/banners/pub/huge_income/728x90.gif?v=1762961392"
-            alt="Anúncio HilltopAds"
-            width={728}
-            height={90}
-          />
-        </a>
-        <button
-          className="hamburger"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Abrir menu"
-          aria-expanded={isMenuOpen}
-        >
-          ☰
-        </button>
+      {/* NAVBAR (estilo imagem) */}
+      <header className="navbar">
+        <div className="nav-container">
+          <div className="logo" onClick={() => router.push("/")}>
+            URLCURT
+          </div>
 
-        <div className={`nav-links ${isMenuOpen ? "active" : ""}`}>
-          {!isLoggedIn ? (
-            <>
-              <button onClick={handleSobre} className="btn btn-login">
-                Sobre
+          <nav className={`nav-links ${isMenuOpen ? "open" : ""}`}>
+            {!isLoggedIn ? (
+              <>
+                <button onClick={handlePolitica}>Politica</button>
+                <button onClick={handleSobre}>Sobre</button>
+                <button onClick={handleLogin}>Entrar</button>
+                <button className="cta" onClick={handleRegister}>
+                  Registre-se
+                </button>
+              </>
+            ) : (
+              <button onClick={() => router.push("/dashboard")}>
+                Dashboard
               </button>
-              <button onClick={handleContato} className="btn btn-login">
-                Contato
-              </button>
-              <button onClick={handleLogin} className="btn btn-login">
-                Login
-              </button>
-              <button onClick={handleRegister} className="btn btn-register">
-                Registrar
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => router.push("/dashboard")}
-                className="btn btn-user"
-                title="Perfil"
-              >
-                👤
-              </button>
-              <button onClick={handleLogout} className="btn btn-logout">
-                Logout
-              </button>
-            </>
-          )}
+            )}
+
+          </nav>
+
+          <button
+            className="hamburger"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            ☰
+          </button>
         </div>
-      </nav>
+      </header>
 
       <FloatingShare />
 
-      {/* Hero */}
-      <main className="hero">
-        <div className="hero-content">
-          <h1>
-            Encurte e Compartilhe URLs com{" "}
-            <span className="highlight">Facilidade</span>
-          </h1>
+      {/* HERO (IGUAL À IMAGEM) */}
+      <main className="home">
+        {/* HERO */}
+        <section className="hero-section">
+          <div className="hero-grid">
+            <div className="hero-left">
+              <h1>
+                Encurte Links Longos <br />
+                e Monitore seus Cliques!
+              </h1>
 
-          <p>
-            Transforme seus links longos em URLs curtas e personalizadas,
-            prontas para compartilhar nas redes sociais, campanhas e sites.
-            Monitore cliques, desempenho e conquiste uma presença digital mais
-            inteligente.
-          </p>
+              <p>
+                Transforme URLs extensas em links curtos e obtenha estatísticas
+                detalhadas em segundos.
+              </p>
 
-          <div className="hero-buttons">
-            <button onClick={handleRegister} className="btn btn-primary">
-              Comece Agora 🚀
-            </button>
-            <button onClick={handleLogin} className="btn btn-secondary">
-              Já Tenho Conta
-            </button>
+              <div className="shortener-box">
+                <input placeholder="Cole seu link aqui..." />
+                <button onClick={handleRegister}>Encurtar URL</button>
+              </div>
+
+              <span className="login-text">
+                Já tem uma conta? <b onClick={handleLogin}>Entrar</b>
+              </span>
+            </div>
+
+            <div className="hero-right">
+              <div className="dashboard-card">
+                <div className="browser-bar">
+                  <span />
+                  <span />
+                  <span />
+                </div>
+
+                <div className="url-bar">urlcurt.com/campanha</div>
+
+                <div className="stats-row">
+                  <div>
+                    <strong>5.280 </strong>
+                    <span>Cliques</span>
+                  </div>
+                  <div>
+                    <strong>75% </strong>
+                    <span>Via Mobile</span>
+                  </div>
+                </div>
+
+                <div className="chart-box">📈</div>
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
+
+        {/* FEATURES */}
+        <section className="features-strip">
+          <div className="feature">
+            🔗
+            <h4>Encurtamento Fácil</h4>
+            <p>Crie URLs curtas em um clique.</p>
+          </div>
+
+          <div className="feature">
+            📊
+            <h4>Estatísticas Avançadas</h4>
+            <p>Analise o desempenho dos seus links.</p>
+          </div>
+
+          <div className="feature">
+            🔒
+            <h4>Links Seguros</h4>
+            <p>Proteção e privacidade garantida.</p>
+          </div>
+        </section>
+
+        {/* COMO FUNCIONA */}
+        <section className="how-it-works">
+          <h2>Como Funciona</h2>
+          <p>Encurte seu link em 3 passos simples:</p>
+
+          <div className="steps">
+            <div className="step">1️⃣ Cole seu link longo</div>
+            <div className="step">2️⃣ Clique em “Encurtar”</div>
+            <div className="step">3️⃣ Compartilhe e acompanhe</div>
+          </div>
+
+          <button className="cta-main" onClick={handleRegister}>
+            Comece Agora
+          </button>
+        </section>
+
+        {/* NÚMEROS */}
+        <section className="numbers">
+          <h2>Números que Impressionam</h2>
+
+          <div className="numbers-grid">
+            <div>
+              <strong>1.2M+ </strong>
+              <span>Links Encurtados</span>
+            </div>
+            <div>
+              <strong>85K+ </strong>
+              <span>Usuários Satisfeitos</span>
+            </div>
+            <div>
+              <strong>100% </strong>
+              <span>Segurança Garantida</span>
+            </div>
+          </div>
+        </section>
       </main>
 
+      {/* SEÇÕES ORIGINAIS */}
       <FeaturesSection />
       <FeaturesSection1 />
       <FeaturesSection2 />
       <AboutSection />
       <ArticlesSection articles={articlesMock} />
       <ConsentFooter />
-      {/*<CallToAction onRegisterClick={handleRegister} />*/}
 
       <footer className="footer">
-        <small>
-          © {new Date().getFullYear()} UrlCurt. Todos os direitos reservados. |{" "}
-          <a href="/politica">Política de Privacidade</a>
-        </small>
+        © {new Date().getFullYear()} UrlCurt
       </footer>
 
-      {/* Canvas Futurista */}
-      <canvas
-        ref={canvasRef}
-        className="background"
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          zIndex: -1,
-          pointerEvents: "none", // evita bloquear cliques
-        }}
-      />
+      <canvas ref={canvasRef} className="background" />
 
-      {/* 🔹 Estilo aprimorado */}
+      {/* CSS */}
       <style jsx>{`
-        :root {
-          --accent: #6366f1;
-          --accent-strong: #8b5cf6;
-          --text-light: #e2e8f0;
-        }
-
-        /* 🔹 O botão hambúrguer fica escondido por padrão (desktop) */
-        /* 🔹 Esconde o botão hambúrguer no desktop */
-        .hamburger {
-          display: none;
-          @media (max-width: 768px) {
-            font-size: 1rem;
-            margin-left: 8px;
-          }
-        }
-
-        /* 🔹 Mostra o menu normalmente em desktop */
-        .nav-links {
-          display: flex;
-          gap: 1rem;
-        }
-
-        /* 🔹 Mobile: botão aparece, menu fica oculto por padrão */
-        @media (max-width: 768px) {
-          .hamburger {
-            display: block;
-            font-size: 1.8rem;
-            background: transparent;
-            border: none;
-            color: #8b5cf6;
-            cursor: pointer;
-            z-index: 100; /* acima do menu */
-          }
-
-          .nav-links {
-            display: none;
-            flex-direction: column;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            background: rgba(15, 32, 39, 0.98);
-            padding: 1rem;
-            gap: 1rem;
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(139, 92, 246, 0.3);
-            transition: all 0.3s ease;
-          }
-
-          /* 🔹 Quando ativo: mostra o menu */
-          .nav-links.active {
-            display: flex;
-            animation: slideDown 0.3s ease forwards;
-          }
-
-          /* 🔹 Animação suave */
-          @keyframes slideDown {
-            from {
-              opacity: 0;
-              transform: translateY(-10px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-        }
-
         body {
           margin: 0;
-          font-family: "Inter", sans-serif;
-          color: var(--text-light);
+          font-family: Inter, sans-serif;
         }
 
         .navbar {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 0rem 2rem;
-          background: rgba(15, 23, 42, 0.85);
-          backdrop-filter: blur(10px);
-          border-bottom: 1px solid rgba(99, 102, 241, 0.2);
           position: fixed;
           width: 100%;
-          top: 0;
+          background: #fff;
+          box-shadow: 0 2px 10px rgba(0,0,0,.08);
           z-index: 10;
         }
 
-        .logo {
-          font-size: 1.8rem;
-          font-weight: 800;
-          background: linear-gradient(90deg, #00c6ff, #0072ff);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          letter-spacing: 1.5px;
-          text-transform: uppercase;
-          font-family: "Montserrat", sans-serif;
-          cursor: pointer;
-          transition: all 0.3s ease;
-
-          &:hover {
-            transform: scale(1.05);
-            filter: brightness(1.3);
-          }
-
-          @media (max-width: 768px) {
-            font-size: 1rem;
-          }
-        }
-
-        .nav-links {
+        .nav-container {
+          max-width: 1200px;
+          margin: auto;
           display: flex;
-          gap: 1rem;
+          align-items: center;
+          justify-content: space-between;
+          padding: 1rem 2rem;
         }
 
-        .btn {
-          padding: 0.6rem 1.2rem;
-          border-radius: 8px;
-          border: none;
-          font-weight: 600;
+        .logo {
+          font-weight: 800;
+          color: #2563eb;
           cursor: pointer;
-          transition: all 0.3s ease;
         }
 
-        .btn-login {
-          background: transparent;
-          color: #cbd5e1;
-        }
+        /* Botões normais do menu */
+          .nav-links button {
+            position: relative;
+            background: none;
+            border: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            color: #0b1020;
+            padding: 0.4rem 0;
+            margin-left: 1rem;
+            letter-spacing: 0.3px;
 
-        .btn-login:hover {
+            transition: color 0.25s ease, transform 0.25s ease;
+          }
+
+          /* underline animado */
+          .nav-links button::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -4px;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #2563eb, #7c3aed);
+            transition: width 0.3s ease;
+          }
+
+          .nav-links button:hover {
+            color: #2563eb;
+            transform: translateY(-1px);
+          }
+
+          .nav-links button:hover::after {
+            width: 100%;
+          }
+
+          /* CTA – Registre-se */
+          .nav-links .cta {
+            background: linear-gradient(135deg, #f97316, #fb923c);
+            color: white;
+            padding: 0.45rem 1.1rem;
+            border-radius: 6px;
+            margin-left: 1rem;
+
+            box-shadow: 0 6px 18px rgba(249,115,22,.35);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+          }
+
+          /* remove underline do CTA */
+          .nav-links .cta::after {
+            display: none;
+          }
+
+          .nav-links .cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(249,115,22,.45);
+          }
+        .cta {
+          background: #f97316;
           color: white;
+          padding: 0.5rem 1rem;
+          border-radius: 6px;
         }
 
-        .btn-register {
-          background: var(--accent-strong);
-          color: white;
-          box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
-        }
-
-        .btn-register:hover {
-          background: var(--accent);
+        .hamburger {
+          display: none;
         }
 
         .hero {
-          max-width: 900px;
-          margin: 100px auto 60px;
-          text-align: center;
-          padding: 0 1.5rem;
-          color: #e0e7ff;
+          padding-top: 120px;
+          background: linear-gradient(135deg,#2563eb,#7c3aed);
+          color: white;
         }
 
-        .hero h1 {
-          font-size: 3rem;
-          font-weight: 800;
-          margin-bottom: 1rem;
-          color: #fff;
+        .hero-container {
+          max-width: 1200px;
+          margin: auto;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 3rem;
+          padding: 3rem 2rem;
         }
 
-        .highlight {
-          color: var(--accent-strong);
-        }
-
-        .hero p {
-          font-size: 1.2rem;
-          line-height: 1.8;
-          color: #cbd5e1;
-          margin-bottom: 2rem;
-        }
-
-        .hero-buttons {
+        .shortener {
           display: flex;
+          margin-top: 1rem;
+        }
+
+        .shortener input {
+          flex: 1;
+          padding: 0.8rem;
+          border-radius: 6px 0 0 6px;
+          border: none;
+        }
+
+        .shortener button {
+          background: #f97316;
+          border: none;
+          color: white;
+          padding: 0 1.2rem;
+          border-radius: 0 6px 6px 0;
+        }
+
+        .hero-card {
+          background: white;
+          color: #1e293b;
+          border-radius: 12px;
+          padding: 1.5rem;
+          box-shadow: 0 20px 40px rgba(0,0,0,.25);
+        }
+
+        .stats {
+          display: flex;
+          justify-content: space-between;
+          margin: 1rem 0;
+        }
+
+        .chart {
+          background: #e0f2fe;
+          height: 120px;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
           justify-content: center;
-          gap: 1rem;
-        }
-
-        .btn-primary {
-          background: var(--accent-strong);
-          color: white;
-          box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
-        }
-
-        .btn-primary:hover {
-          background: var(--accent);
-          transform: scale(1.05);
-        }
-
-        .btn-secondary {
-          background: rgba(255, 255, 255, 0.08);
-          color: white;
-        }
-
-        .btn-secondary:hover {
-          background: rgba(255, 255, 255, 0.15);
         }
 
         .footer {
           text-align: center;
-          padding: 2rem 0;
+          padding: 2rem;
           color: #94a3b8;
-          font-size: 0.9rem;
-          border-top: 1px solid rgba(99, 102, 241, 0.15);
         }
 
         .background {
-          background: radial-gradient(
-            circle at 20% 20%,
-            #1e1b4b,
-            #0f172a,
-            #020617
-          );
-          filter: brightness(1.2) saturate(1.1);
+          position: fixed;
+          inset: 0;
+          z-index: -1;
         }
 
         @media (max-width: 768px) {
-          .hero h1 {
-            font-size: 2.3rem;
+
+          /* Navbar */
+          .nav-container {
+            padding: 0.75rem 1rem;
           }
-          .hero p {
+
+          .nav-links {
+            position: absolute;
+            top: 64px; /* altura da navbar */
+            left: 0;
+            width: 100%;
+            background: white;
+
+            display: none;
+            flex-direction: column;
+            align-items: center;
+
+            padding: 1rem 0;
+            box-shadow: 0 10px 20px rgba(0,0,0,.1);
+            z-index: 9;
+          }
+
+          .nav-links.open {
+            display: flex;
+          }
+
+          .nav-links button {
+            margin: 0.5rem 0;
             font-size: 1rem;
           }
-          .nav-links {
-            display: none;
+
+          .hamburger {
+            display: block;
+            font-size: 1.6rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: gray;
+          }
+
+          .hamburger {
+            display: block;
+            font-size: 1.5rem;
+            cursor: pointer;
+          }
+
+          /* Hero */
+          .hero-section {
+            padding: 4rem 1rem;
+            text-align: center;
+          }
+
+          .hero-left h1 {
+            font-size: 2rem;
+          }
+
+          .hero-left p {
+            font-size: 1rem;
+          }
+
+          /* Grids */
+          .hero-grid,
+          .features-strip,
+          .steps,
+          .numbers-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+          }
+
+          /* Shortener */
+          .shortener,
+          .shortener-box {
+            flex-direction: column;
+          }
+
+          .shortener input,
+          .shortener-box input {
+            border-radius: 6px;
+          }
+
+          .shortener button,
+          .shortener-box button {
+            width: 100%;
+            padding: 0.9rem;
+            border-radius: 6px;
+            margin-top: 0.5rem;
+          }
+
+          /* Cards */
+          .hero-card,
+          .dashboard-card {
+            padding: 1rem;
+          }
+
+          /* Chart / ícone */
+          .chart-box {
+            height: 90px;
+            font-size: 70px;
+          }
+
+          /* Stats */
+          .stats,
+          .stats-row {
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: center;
+          }
+
+          /* Features */
+          .feature {
+            padding: 1.5rem 1rem;
+          }
+
+          /* Footer */
+          .footer {
+            font-size: 0.9rem;
+            padding: 1.5rem 1rem;
           }
         }
+        .home {
+          background: linear-gradient(135deg, #2563eb, #7c3aed);
+        }
+
+        .hero-section {
+          background: linear-gradient(135deg, #2563eb, #7c3aed);
+          padding: 6rem 2rem;
+          color: white;
+        }
+
+        .hero-grid {
+          max-width: 1200px;
+          margin: auto;
+          display: grid;
+          grid-template-columns: 1.1fr 0.9fr;
+          gap: 3rem;
+        }
+
+        .hero-left h1 {
+          font-size: 2.8rem;
+          font-weight: 800;
+        }
+
+        .hero-left p {
+          margin: 1rem 0 2rem;
+          font-size: 1.1rem;
+        }
+
+        .shortener-box {
+          display: flex;
+          background: white;
+          border-radius: 8px;
+          overflow: hidden;
+          color: black;
+        }
+
+        .shortener-box input {
+          flex: 1;
+          padding: 1rem;
+          border: none;
+        }
+
+        .shortener-box button {
+          background: #f97316;
+          color: white;
+          padding: 0 1.5rem;
+          border: none;
+          font-weight: 600;
+        }
+
+        .dashboard-card {
+          background: white;
+          color: #1e293b;
+          border-radius: 12px;
+          padding: 1rem;
+          box-shadow: 0 30px 60px rgba(0,0,0,.25);
+        }
+
+        .browser-bar span {
+          display: inline-block;
+          width: 10px;
+          height: 10px;
+          background: #cbd5e1;
+          border-radius: 50%;
+          margin-right: 5px;
+        }
+
+        .stats-row {
+          display: flex;
+          justify-content: space-between;
+          margin: 1rem 0;
+        }
+
+        .chart-box {
+          height: 120px;
+          background: #e0f2fe;
+          border-radius: 8px;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          font-size: 100px;
+          line-height: 1; /* remove espaço extra do emoji */
+        }
+
+
+        .features-strip {
+          display: grid;
+          grid-template-columns: repeat(3,1fr);
+          max-width: 1200px;
+          margin: -60px auto 0;
+          background: #e0f2fe;
+          color: black;
+          border-radius: 12px;
+          box-shadow: 0 10px 30px rgba(0,0,0,.1);
+        }
+
+        .feature {
+          padding: 2rem;
+          text-align: center;
+          color: rgb(10, 10, 10);
+          margin: 1px;
+          p {
+            color: rgb(10, 10, 10)
+          }
+        }
+
+        .how-it-works,
+        .numbers {
+          text-align: center;
+          padding: 4rem 2rem;
+        }
+
+        .steps {
+          display: grid;
+          grid-template-columns: repeat(3,1fr);
+          max-width: 900px;
+          margin: 2rem auto;
+          gap: 1rem;
+        }
+
+        .step {
+          background: #e0f2fe;
+          color: black;
+          padding: 1.5rem;
+          border-radius: 10px;
+        }
+
+        .cta-main {
+          background: #f97316;
+          color: white;
+          padding: 1rem 2rem;
+          border-radius: 8px;
+          border: none;
+          font-size: 1.1rem;
+        }
+
+        .numbers-grid {
+          display: grid;
+          grid-template-columns: repeat(3,1fr);
+          max-width: 900px;
+          margin: auto;
+          gap: 1rem;
+          color: rgb(10, 10, 10);
+        }
+
+        .numbers-grid div {
+          background: white;
+          padding: 2rem;
+          border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+          .hero-grid,
+          .features-strip,
+          .steps,
+          .numbers-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+
       `}</style>
     </>
   );
