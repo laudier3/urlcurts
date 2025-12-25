@@ -6,7 +6,7 @@ Um painel administrativo moderno, responsivo e escalável para gerenciamento de 
 
 ## 📸 Preview
 
-<img src="https://user-images.githubusercontent.com/674621/191327859-b1c95d59-609b-447e-82c1-60e8fdb79a40.png" alt="Ecommerce Dashboard Preview" width="100%" />
+<img src="https://github.com/laudier3/urlcurts/blob/main/frontend/public/site.png" alt="Ecommerce Dashboard Preview" width="100%" />
 
 > *Imagem meramente ilustrativa. Substitua por screenshots reais do seu projeto quando estiver pronto.*
 
