@@ -252,7 +252,21 @@ export default function LandingPage() {
             Comece Agora
           </button>
         </section>
-
+        <div>
+          <a
+              href="https://hilltopads.com/pt?ref=329233"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+            <img
+              src="//static.hilltopads.com/other/banners/pub/get_high_ecpm/728x90.gif?v=1766584030"
+              alt="Anúncio HilltopAds"
+              width={728}
+              height={90}
+              style={{display: "flex", margin: "auto"}}
+            />
+          </a>
+        </div>
         {/* NÚMEROS */}
         <section className="numbers">
           <h2>Números que Impressionam</h2>
