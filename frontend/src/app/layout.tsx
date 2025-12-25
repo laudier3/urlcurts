@@ -1,10 +1,13 @@
-import './globals.css';
-import type { Metadata } from 'next';
+import "./globals.css";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'UrlCurt',
+  title: "UrlCurt",
   description:
-    'Transforme links longos em URLs curtas com segurança, praticidade e estatísticas em tempo real.',
+    "Transforme links longos em URLs curtas com segurança, praticidade e estatísticas em tempo real.",
+
+  // ✅ META TAG REFERRER
+  referrer: "no-referrer-when-downgrade",
 };
 
 export default function RootLayout({
