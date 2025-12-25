@@ -122,7 +122,7 @@ export default function LandingPage() {
           <div className="logo" onClick={() => router.push("/")}>
             URLCURT
           </div>
-
+            
           <nav className={`nav-links ${isMenuOpen ? "open" : ""}`}>
             {!isLoggedIn ? (
               <>
@@ -176,6 +176,17 @@ export default function LandingPage() {
               <span className="login-text">
                 Já tem uma conta? <b onClick={handleLogin}>Entrar</b>
               </span>
+              <a
+              href="https://hilltopads.com/pt?ref=329233"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ad-banner"
+            >
+              <img
+                src="https://static.hilltopads.com/other/banners/pub/huge_income/728x90.gif"
+                alt="Anúncio HilltopAds"
+              />
+            </a>
             </div>
 
             <div className="hero-right">
