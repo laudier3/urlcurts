@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_YOUR_URL || "https://url.urlcurt.site/api",
+  baseURL: "https://url.urlcurt.site/api", //process.env.NEXT_PUBLIC_YOUR_URL ||
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
