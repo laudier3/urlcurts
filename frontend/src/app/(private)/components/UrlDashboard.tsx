@@ -228,7 +228,7 @@ export const UrlManager: React.FC = () => {
         {/* Lista de URLs */}
         <ul className="space-y-4">
           {visibleUrls.map(url => {
-            const shortUrl = `https://urlcurt.site/${url.slug}`;
+            const shortUrl = `https://url.urlcurt.site/${url.slug}`;
             const history = trafficData[url.id];
             const isEditing = editingId === url.id;
             const isExpanded = expandedUrlId === url.id;
