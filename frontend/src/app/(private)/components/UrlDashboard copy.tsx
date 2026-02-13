@@ -58,8 +58,6 @@ export const UrlManager: React.FC = () => {
     const [clickDetails, setClickDetails] = useState<Record<number, ClickDetail[]>>({});
     const [loadingClicks, setLoadingClicks] = useState<number | null>(null);
 
-    console.log(clickDetails)
-
   const particlesInit = async (main: any) => {
     await loadFull(main);
   };
@@ -105,7 +103,7 @@ export const UrlManager: React.FC = () => {
   const fetchTraffic = async (urlId: number) => {
     setLoadingTraffic(urlId);
     try {
-      const res = await api.get<TrafficEntry[]>(`/urls/${urlId}/clicks`);
+      const res = await api.get<TrafficEntry[]>(`/urls/${urlId}/traffic`);
       setTrafficData(prev => ({ ...prev, [urlId]: res.data }));
       setExpandedUrlId(urlId);
     } catch (err) {
@@ -318,20 +316,19 @@ export const UrlManager: React.FC = () => {
                       <Copy size={16} /> {copiedUrlId === url.id ? "Copiado!" : "Copiar"}
                     </button>
 
-                     <button
-                        onClick={() => {
-                          if (isExpanded) setExpandedUrlId(null);
-                          else {
-                            if (!trafficData[url.id]) fetchTraffic(url.id);
-                            if (!clickDetails[url.id]) fetchClickDetails(url.id);
-                            setExpandedUrlId(url.id);
-                          }
-                        }}
-                        disabled={loadingTraffic !== null}
-                        className={`flex items-center gap-1 px-3 py-2 text-sm sm:text-base rounded-md font-medium transition-all duration-200 ${loadingTraffic !== null ? "opacity-50 cursor-not-allowed bg-indigo-700 text-white" : "bg-indigo-600 hover:bg-indigo-700 text-white"}`}
-                      >
-                        {isExpanded ? <><EyeOff size={16} /> Ocultar tráfego</> : loadingTraffic === url.id ? "Carregando..." : <><Eye size={16} /> Ver tráfego</>}
-                      </button>
+                    <button
+                      onClick={() => {
+                        if (isExpanded) setExpandedUrlId(null);
+                        else {
+                          if (!trafficData[url.id]) fetchTraffic(url.id);
+                          setExpandedUrlId(url.id);
+                        }
+                      }}
+                      disabled={loadingTraffic !== null}
+                      className={`flex items-center gap-1 px-3 py-2 text-sm sm:text-base rounded-md font-medium transition-all duration-200 ${loadingTraffic !== null ? "opacity-50 cursor-not-allowed bg-indigo-700 text-white" : "bg-indigo-600 hover:bg-indigo-700 text-white"}`}
+                    >
+                      {isExpanded ? <><EyeOff size={16} /> Ocultar tráfego</> : loadingTraffic === url.id ? "Carregando..." : <><Eye size={16} /> Ver tráfego</>}
+                    </button>
                   </div>
                 </div>
 
@@ -351,10 +348,8 @@ export const UrlManager: React.FC = () => {
                   </div>
                 )}
 
-                 {/* Estatísticas geográficas */}
                 {isExpanded && <div className="mt-3"><TrafficStats urlId={url.id} /></div>}
 
-                {/* Lista de IPs */}
                 {isExpanded && (
                   <div className="bg-gray-800/70 p-4 rounded-lg mt-4 border border-gray-700">
                     <h4 className="text-indigo-400 font-semibold mb-3">Detalhes das Visitas (IPs)</h4>
@@ -369,7 +364,7 @@ export const UrlManager: React.FC = () => {
                             className="flex flex-col md:flex-row md:justify-between text-sm border-b border-gray-700 pb-2"
                           >
                             <span><strong>IP:</strong> {click.ip ?? "Desconhecido"}</span>
-                            <span>{click.city ?? "—"} - {click.country ?? "—"}</span>
+                            <span>{click.city ?? "City"} - {click.country ?? "Count"}</span>
                             <span>{new Date(click.timestamp).toLocaleString()}</span>
                           </div>
                         ))}

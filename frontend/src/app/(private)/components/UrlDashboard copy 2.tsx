@@ -53,12 +53,10 @@ export const UrlManager: React.FC = () => {
   const [creatingUrl, setCreatingUrl] = useState(false);
   const [savingUrlId, setSavingUrlId] = useState<number | null>(null);
   const [userModalOpen, setUserModalOpen] = useState(false);
-  
-  // Novos estados para IPs / visitas detalhadas
-    const [clickDetails, setClickDetails] = useState<Record<number, ClickDetail[]>>({});
-    const [loadingClicks, setLoadingClicks] = useState<number | null>(null);
 
-    console.log(clickDetails)
+  // Novos estados para IPs / visitas detalhadas
+  const [clickDetails, setClickDetails] = useState<Record<number, ClickDetail[]>>({});
+  const [loadingClicks, setLoadingClicks] = useState<number | null>(null);
 
   const particlesInit = async (main: any) => {
     await loadFull(main);
@@ -105,7 +103,7 @@ export const UrlManager: React.FC = () => {
   const fetchTraffic = async (urlId: number) => {
     setLoadingTraffic(urlId);
     try {
-      const res = await api.get<TrafficEntry[]>(`/urls/${urlId}/clicks`);
+      const res = await api.get<TrafficEntry[]>(`/urls/${urlId}/traffic`);
       setTrafficData(prev => ({ ...prev, [urlId]: res.data }));
       setExpandedUrlId(urlId);
     } catch (err) {
@@ -318,20 +316,20 @@ export const UrlManager: React.FC = () => {
                       <Copy size={16} /> {copiedUrlId === url.id ? "Copiado!" : "Copiar"}
                     </button>
 
-                     <button
-                        onClick={() => {
-                          if (isExpanded) setExpandedUrlId(null);
-                          else {
-                            if (!trafficData[url.id]) fetchTraffic(url.id);
-                            if (!clickDetails[url.id]) fetchClickDetails(url.id);
-                            setExpandedUrlId(url.id);
-                          }
-                        }}
-                        disabled={loadingTraffic !== null}
-                        className={`flex items-center gap-1 px-3 py-2 text-sm sm:text-base rounded-md font-medium transition-all duration-200 ${loadingTraffic !== null ? "opacity-50 cursor-not-allowed bg-indigo-700 text-white" : "bg-indigo-600 hover:bg-indigo-700 text-white"}`}
-                      >
-                        {isExpanded ? <><EyeOff size={16} /> Ocultar tráfego</> : loadingTraffic === url.id ? "Carregando..." : <><Eye size={16} /> Ver tráfego</>}
-                      </button>
+                    <button
+                      onClick={() => {
+                        if (isExpanded) setExpandedUrlId(null);
+                        else {
+                          if (!trafficData[url.id]) fetchTraffic(url.id);
+                          if (!clickDetails[url.id]) fetchClickDetails(url.id);
+                          setExpandedUrlId(url.id);
+                        }
+                      }}
+                      disabled={loadingTraffic !== null}
+                      className={`flex items-center gap-1 px-3 py-2 text-sm sm:text-base rounded-md font-medium transition-all duration-200 ${loadingTraffic !== null ? "opacity-50 cursor-not-allowed bg-indigo-700 text-white" : "bg-indigo-600 hover:bg-indigo-700 text-white"}`}
+                    >
+                      {isExpanded ? <><EyeOff size={16} /> Ocultar tráfego</> : loadingTraffic === url.id ? "Carregando..." : <><Eye size={16} /> Ver tráfego</>}
+                    </button>
                   </div>
                 </div>
 
@@ -340,6 +338,7 @@ export const UrlManager: React.FC = () => {
                   <span><strong>Criada em:</strong> {new Date(url.createdAt).toLocaleString()}</span>
                 </div>
 
+                {/* Gráfico */}
                 {isExpanded && history && (
                   <div className="bg-gray-800/80 p-4 rounded-lg shadow-inner mt-5">
                     <ReactApexChart
@@ -351,7 +350,7 @@ export const UrlManager: React.FC = () => {
                   </div>
                 )}
 
-                 {/* Estatísticas geográficas */}
+                {/* Estatísticas geográficas */}
                 {isExpanded && <div className="mt-3"><TrafficStats urlId={url.id} /></div>}
 
                 {/* Lista de IPs */}
@@ -394,24 +393,31 @@ export const UrlManager: React.FC = () => {
 
         {/* Modal de exclusão */}
         <Transition appear show={deleteModalOpen} as={Fragment}>
-          <Dialog as="div" className="relative z-10" onClose={() => setDeleteModalOpen(false)}>
+          <Dialog as="div" className="relative z-10" closeModal={() => setDeleteModalOpen(false)}>
             <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
-              <div className="fixed inset-0 bg-black bg-opacity-75" />
+              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
             </Transition.Child>
 
             <div className="fixed inset-0 overflow-y-auto">
               <div className="flex min-h-full items-center justify-center p-4 text-center">
                 <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
                   <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-gray-900 p-6 text-left align-middle shadow-xl transition-all">
-                    <Dialog.Title className="text-lg font-medium text-white">Confirmar exclusão</Dialog.Title>
+                    <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-white">
+                      Confirmar exclusão
+                    </Dialog.Title>
                     <div className="mt-2">
                       <p className="text-sm text-gray-300">
-                        Tem certeza que deseja deletar a URL <strong>{urlToDelete?.original}</strong>?
+                        Tem certeza que deseja deletar a URL: <strong>{urlToDelete?.original}</strong>?
                       </p>
                     </div>
+
                     <div className="mt-4 flex justify-end gap-2">
-                      <button type="button" className="px-4 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 text-white" onClick={() => setDeleteModalOpen(false)}>Cancelar</button>
-                      <button type="button" className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600" onClick={handleDelete}>Deletar</button>
+                      <button type="button" className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg" onClick={() => setDeleteModalOpen(false)}>
+                        Cancelar
+                      </button>
+                      <button type="button" className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg" onClick={handleDelete}>
+                        Deletar
+                      </button>
                     </div>
                   </Dialog.Panel>
                 </Transition.Child>
@@ -421,31 +427,10 @@ export const UrlManager: React.FC = () => {
         </Transition>
 
         {/* Modal de usuário */}
-        <Transition appear show={userModalOpen} as={Fragment}>
-          <Dialog as="div" className="relative z-20" onClose={() => setUserModalOpen(false)}>
-            <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
-              <div className="fixed inset-0 bg-black bg-opacity-75" />
-            </Transition.Child>
-
-            <div className="fixed inset-0 overflow-y-auto">
-              <div className="flex min-h-full items-center justify-center p-4 text-center">
-                <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
-                  <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-gray-900 p-6 text-left align-middle shadow-xl transition-all">
-                    <Dialog.Title className="text-lg font-medium text-white">Configurações do Usuário</Dialog.Title>
-                    <div className="mt-4">
-                    <UserProfileManager closeModal={() => setUserModalOpen(false)} />
-
-                    </div>
-                    <div className="mt-4 flex justify-end">
-                      <button onClick={() => setUserModalOpen(false)} className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">Fechar</button>
-                    </div>
-                  </Dialog.Panel>
-                </Transition.Child>
-              </div>
-            </div>
-          </Dialog>
-        </Transition>
+        {userModalOpen && <UserProfileManager closeModal={() => setUserModalOpen(false)} />}
       </div>
     </div>
   );
 };
+
+export default UrlManager;

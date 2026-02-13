@@ -27,15 +27,6 @@ interface TrafficEntry {
   count: number;
 }
 
-interface ClickDetail {
-  id: number;
-  ip: string | null;
-  country: string | null;
-  region: string | null;
-  city: string | null;
-  timestamp: string;
-}
-
 export const UrlManager: React.FC = () => {
   const [urls, setUrls] = useState<Url[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,12 +44,6 @@ export const UrlManager: React.FC = () => {
   const [creatingUrl, setCreatingUrl] = useState(false);
   const [savingUrlId, setSavingUrlId] = useState<number | null>(null);
   const [userModalOpen, setUserModalOpen] = useState(false);
-  
-  // Novos estados para IPs / visitas detalhadas
-    const [clickDetails, setClickDetails] = useState<Record<number, ClickDetail[]>>({});
-    const [loadingClicks, setLoadingClicks] = useState<number | null>(null);
-
-    console.log(clickDetails)
 
   const particlesInit = async (main: any) => {
     await loadFull(main);
@@ -105,25 +90,13 @@ export const UrlManager: React.FC = () => {
   const fetchTraffic = async (urlId: number) => {
     setLoadingTraffic(urlId);
     try {
-      const res = await api.get<TrafficEntry[]>(`/urls/${urlId}/clicks`);
+      const res = await api.get<TrafficEntry[]>(`/urls/${urlId}/traffic`);
       setTrafficData(prev => ({ ...prev, [urlId]: res.data }));
       setExpandedUrlId(urlId);
     } catch (err) {
       console.error(err);
     } finally {
       setLoadingTraffic(null);
-    }
-  };
-
-  const fetchClickDetails = async (urlId: number) => {
-    setLoadingClicks(urlId);
-    try {
-      const res = await api.get<ClickDetail[]>(`/urls/${urlId}/clicks`, { withCredentials: true });
-      setClickDetails(prev => ({ ...prev, [urlId]: res.data }));
-    } catch (err) {
-      console.error("Erro ao buscar cliques", err);
-    } finally {
-      setLoadingClicks(null);
     }
   };
 
@@ -318,20 +291,19 @@ export const UrlManager: React.FC = () => {
                       <Copy size={16} /> {copiedUrlId === url.id ? "Copiado!" : "Copiar"}
                     </button>
 
-                     <button
-                        onClick={() => {
-                          if (isExpanded) setExpandedUrlId(null);
-                          else {
-                            if (!trafficData[url.id]) fetchTraffic(url.id);
-                            if (!clickDetails[url.id]) fetchClickDetails(url.id);
-                            setExpandedUrlId(url.id);
-                          }
-                        }}
-                        disabled={loadingTraffic !== null}
-                        className={`flex items-center gap-1 px-3 py-2 text-sm sm:text-base rounded-md font-medium transition-all duration-200 ${loadingTraffic !== null ? "opacity-50 cursor-not-allowed bg-indigo-700 text-white" : "bg-indigo-600 hover:bg-indigo-700 text-white"}`}
-                      >
-                        {isExpanded ? <><EyeOff size={16} /> Ocultar tráfego</> : loadingTraffic === url.id ? "Carregando..." : <><Eye size={16} /> Ver tráfego</>}
-                      </button>
+                    <button
+                      onClick={() => {
+                        if (isExpanded) setExpandedUrlId(null);
+                        else {
+                          if (!trafficData[url.id]) fetchTraffic(url.id);
+                          setExpandedUrlId(url.id);
+                        }
+                      }}
+                      disabled={loadingTraffic !== null}
+                      className={`flex items-center gap-1 px-3 py-2 text-sm sm:text-base rounded-md font-medium transition-all duration-200 ${loadingTraffic !== null ? "opacity-50 cursor-not-allowed bg-indigo-700 text-white" : "bg-indigo-600 hover:bg-indigo-700 text-white"}`}
+                    >
+                      {isExpanded ? <><EyeOff size={16} /> Ocultar tráfego</> : loadingTraffic === url.id ? "Carregando..." : <><Eye size={16} /> Ver tráfego</>}
+                    </button>
                   </div>
                 </div>
 
@@ -351,34 +323,7 @@ export const UrlManager: React.FC = () => {
                   </div>
                 )}
 
-                 {/* Estatísticas geográficas */}
                 {isExpanded && <div className="mt-3"><TrafficStats urlId={url.id} /></div>}
-
-                {/* Lista de IPs */}
-                {isExpanded && (
-                  <div className="bg-gray-800/70 p-4 rounded-lg mt-4 border border-gray-700">
-                    <h4 className="text-indigo-400 font-semibold mb-3">Detalhes das Visitas (IPs)</h4>
-
-                    {loadingClicks === url.id ? (
-                      <p className="text-gray-400">Carregando visitas...</p>
-                    ) : clickDetails[url.id]?.length ? (
-                      <div className="max-h-60 overflow-y-auto space-y-2">
-                        {clickDetails[url.id].map(click => (
-                          <div
-                            key={click.id}
-                            className="flex flex-col md:flex-row md:justify-between text-sm border-b border-gray-700 pb-2"
-                          >
-                            <span><strong>IP:</strong> {click.ip ?? "Desconhecido"}</span>
-                            <span>{click.city ?? "—"} - {click.country ?? "—"}</span>
-                            <span>{new Date(click.timestamp).toLocaleString()}</span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-gray-500">Nenhuma visita registrada.</p>
-                    )}
-                  </div>
-                )}
               </li>
             );
           })}

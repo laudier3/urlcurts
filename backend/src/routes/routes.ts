@@ -583,4 +583,50 @@ router.get('/api/urls/:id/traffic', async (req: any, res: any) => {
   }
 });
 
+router.get('/api/urls/:id/clicks', authMiddleware, async (req: AuthRequest, res: any) => {
+  const urlId = Number(req.params.id);
+  const userId = req.userId!;
+
+  if (isNaN(urlId)) {
+    return res.status(400).json({ error: 'ID inválido' });
+  }
+
+  try {
+    // 🔒 Verifica se a URL pertence ao usuário
+    const url = await prisma.url.findUnique({ where: { id: urlId } });
+    if (!url || url.userId !== userId) {
+      return res.status(404).json({ error: 'URL não encontrada' });
+    }
+
+    const visits = await prisma.visit.findMany({
+      where: { urlId },
+      orderBy: { timestamp: 'desc' },
+      select: {
+        id: true,
+        ip: true,
+        country: true,
+        region: true,
+        city: true,
+        timestamp: true,
+      },
+      take: 100, // limite de segurança
+    });
+
+    // 🔹 Aplica valores padrão para city, region, country
+    const visitsWithDefaults = visits.map(v => ({
+      ...v,
+      city: v.city || 'Desconhecido',
+      region: v.region || 'Desconhecido',
+      country: v.country || 'Desconhecido',
+      timestamp: new Date(v.timestamp).toISOString(), // opcional: formata a data
+    }));
+
+    // 🔹 Retorna o array plano com defaults
+    res.json(visitsWithDefaults);
+  } catch (err) {
+    console.error('Erro ao buscar cliques:', err);
+    res.status(500).json({ error: 'Erro ao buscar cliques' });
+  }
+});
+
 export { router };
