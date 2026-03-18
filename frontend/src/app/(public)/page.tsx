@@ -297,8 +297,18 @@ export default function LandingPage() {
       <ConsentFooter />
 
       <footer className="footer">
-        © {new Date().getFullYear()} UrlCurt
+        <div className="footer-links">
+          <span onClick={handleSobre}>Sobre</span>
+          <span onClick={handlePolitica}>Política</span>
+          <span onClick={() => router.push("/contato")}>Contato</span>
+        </div>
+
+        <p>© {new Date().getFullYear()} UrlCurt</p>
       </footer>
+
+      {/*<footer className="footer">
+        © {new Date().getFullYear()} UrlCurt
+      </footer>*/}
 
       <canvas ref={canvasRef} className="background" />
 
@@ -460,9 +470,78 @@ export default function LandingPage() {
         }
 
         .footer {
+          position: relative;
+          margin-top: 4rem;
+          padding: 2.5rem 1rem;
+
           text-align: center;
-          padding: 2rem;
+          color: #cbd5f5;
+
+          background: rgba(15, 23, 42, 0.7);
+          backdrop-filter: blur(12px);
+
+          border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        /* Linha decorativa no topo */
+        .footer::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 120px;
+          height: 3px;
+          background: linear-gradient(90deg, #2563eb, #7c3aed);
+          border-radius: 10px;
+        }
+
+        /* Links */
+        .footer-links {
+          display: flex;
+          justify-content: center;
+          gap: 2rem;
+          margin-bottom: 1.2rem;
+          flex-wrap: wrap;
+        }
+
+        /* Cada link */
+        .footer-links span {
+          position: relative;
+          cursor: pointer;
+          font-weight: 500;
+          color: #e2e8f0;
+
+          transition: all 0.25s ease;
+        }
+
+        /* Hover elegante */
+        .footer-links span:hover {
+          color: #60a5fa;
+          transform: translateY(-2px);
+        }
+
+        /* underline animado */
+        .footer-links span::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          bottom: -5px;
+          width: 0%;
+          height: 2px;
+          background: linear-gradient(90deg, #2563eb, #7c3aed);
+          transition: width 0.3s ease;
+        }
+
+        .footer-links span:hover::after {
+          width: 100%;
+        }
+
+        /* Texto final */
+        .footer p {
+          font-size: 0.85rem;
           color: #94a3b8;
+          letter-spacing: 0.5px;
         }
 
         .background {
