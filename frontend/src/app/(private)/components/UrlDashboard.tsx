@@ -105,8 +105,32 @@ export const UrlManager: React.FC = () => {
   const fetchTraffic = async (urlId: number) => {
     setLoadingTraffic(urlId);
     try {
-      const res = await api.get<TrafficEntry[]>(`/urls/${urlId}/clicks`);
-      setTrafficData(prev => ({ ...prev, [urlId]: res.data }));
+      const res = await api.get<any[]>(
+        `/urls/${urlId}/clicks`,
+        { withCredentials: true }
+      );
+
+      console.log("RAW CLICKS:", res.data);
+
+      // 👇 AGRUPAR POR DATA AQUI
+      const grouped: Record<string, number> = {};
+
+      res.data.forEach(click => {
+        const date = new Date(click.timestamp).toISOString().split("T")[0];
+        grouped[date] = (grouped[date] || 0) + 1;
+      });
+
+      const formatted: TrafficEntry[] = Object.entries(grouped).map(
+        ([date, count]) => ({ date, count })
+      );
+
+      console.log("FORMATTED TRAFFIC:", formatted);
+
+      setTrafficData(prev => ({
+        ...prev,
+        [urlId]: formatted
+      }));
+
       setExpandedUrlId(urlId);
     } catch (err) {
       console.error(err);
@@ -166,22 +190,57 @@ export const UrlManager: React.FC = () => {
   };
 
   const buildChartOptions = (data: TrafficEntry[]) => {
+    const dates = data.map(d => new Date(d.date).getTime());
+
     const options: ApexOptions = {
-      chart: { type: "area" as const, height: 260, toolbar: { show: false }, background: "transparent" },
-      xaxis: { type: "datetime", labels: { style: { colors: "#ffffff" } }, categories: data.map(d => d.date) },
+      chart: {
+        type: "area" as const,
+        height: 260,
+        toolbar: { show: false },
+        background: "transparent"
+      },
+      xaxis: {
+        type: "datetime",
+        categories: dates,
+        labels: { style: { colors: "#ffffff" } }
+      },
       dataLabels: { enabled: false },
       stroke: { curve: "smooth", width: 3, colors: ["#6366f1"] },
       grid: { borderColor: "#444", strokeDashArray: 4 },
       fill: {
         type: "gradient",
-        gradient: { shade: "dark", type: "vertical", shadeIntensity: 0.3, gradientToColors: ["#818cf8"], opacityFrom: 0.6, opacityTo: 0.05, stops: [0, 90, 100] },
+        gradient: {
+          shade: "dark",
+          type: "vertical",
+          shadeIntensity: 0.3,
+          gradientToColors: ["#818cf8"],
+          opacityFrom: 0.6,
+          opacityTo: 0.05,
+          stops: [0, 90, 100]
+        }
       },
-      markers: { size: 4, colors: ["#6366f1"], strokeColors: "#fff", strokeWidth: 2 },
-      tooltip: { theme: "dark", x: { format: "dd/MM/yyyy" } },
-      yaxis: { labels: { style: { colors: "#fff" } } },
+      markers: {
+        size: 4,
+        colors: ["#6366f1"],
+        strokeColors: "#fff",
+        strokeWidth: 2
+      },
+      tooltip: {
+        theme: "dark",
+        x: { format: "dd/MM/yyyy" }
+      },
+      yaxis: {
+        labels: { style: { colors: "#fff" } }
+      }
     };
 
-    const series = [{ name: "Visitas", data: data.map(d => d.count) }];
+    const series = [
+      {
+        name: "Visitas",
+        data: data.map(d => d.count)
+      }
+    ];
+
     return { options, series };
   };
 
@@ -340,16 +399,20 @@ export const UrlManager: React.FC = () => {
                   <span><strong>Criada em:</strong> {new Date(url.createdAt).toLocaleString()}</span>
                 </div>
 
-                {isExpanded && history && (
-                  <div className="bg-gray-800/80 p-4 rounded-lg shadow-inner mt-5">
-                    <ReactApexChart
-                      options={buildChartOptions(history).options}
-                      series={buildChartOptions(history).series}
-                      type="area"
-                      height={260}
-                    />
-                  </div>
-                )}
+                {isExpanded && history?.length > 0 && (() => {
+                  const chart = buildChartOptions(history);
+                  return (
+                    <div className="bg-gray-800/80 p-4 rounded-lg shadow-inner mt-5">
+                      <ReactApexChart
+                        key={url.id}
+                        options={chart.options}
+                        series={chart.series}
+                        type="area"
+                        height={260}
+                      />
+                    </div>
+                  );
+                })()}
 
                  {/* Estatísticas geográficas */}
                 {isExpanded && <div className="mt-3"><TrafficStats urlId={url.id} /></div>}
