@@ -9,7 +9,7 @@ import './LoadingSpinner.css';
 interface ContactPageData {
   name: string;
   email: string;
-  message: string;
+  mensagem: string;
 }
 
 const ContactPage: React.FC = () => {
@@ -23,7 +23,7 @@ const ContactPage: React.FC = () => {
   const [formData, setFormData] = useState<ContactPageData>({
     name: '',
     email: '',
-    message: '',
+    mensagem: '',
   });
 
   const [status, setStatus] = useState<string>('');
@@ -42,7 +42,7 @@ const ContactPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.email || !formData.message) {
+    if (!formData.name || !formData.email || !formData.mensagem) {
       setStatus('Por favor, preencha todos os campos.');
       return;
     }
@@ -56,7 +56,7 @@ const ContactPage: React.FC = () => {
 
     try {
       await emailjs.send(service_email, template_email, { ...formData }, user_email);
-      setFormData({ name: '', email: '', message: '' });
+      setFormData({ name: '', email: '', mensagem: '' });
       setIsLoading(false);
       setShowSuccessModal(true);
       setTimeout(() => {
