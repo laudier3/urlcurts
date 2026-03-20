@@ -17,6 +17,8 @@ const ContactPage: React.FC = () => {
   const template_email = process.env.NEXT_PUBLIC_YOUR_TEMPLATE_ID!;
   const user_email = process.env.NEXT_PUBLIC_YOUR_USER_ID!;
 
+  //console.log({ service_email, template_email, user_email });
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const router = useRouter();
 
@@ -189,8 +191,8 @@ const ContactPage: React.FC = () => {
                 Mensagem:
               </label>
               <textarea
-                name="message"
-                value={formData.message}
+                name="mensagem"
+                value={formData.mensagem}
                 onChange={handleChange}
                 disabled={isLoading}
                 className="w-full p-3 border text-gray-700 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
