@@ -2,7 +2,7 @@
 
 import SobrePage from "../pages/SobrePage";
 
-export default function Politicas() {
+export default function Sobre() {
     return (
         <div>
             <SobrePage/>

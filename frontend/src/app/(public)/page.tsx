@@ -49,6 +49,11 @@ export default function LandingPage() {
     router.push("/politica");
   };
 
+  const handleTermos = () => {
+    setIsLoggedIn(true);
+    router.push("/termos");
+  };
+
   const handleRegister = () => router.push("/register");
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -126,8 +131,8 @@ export default function LandingPage() {
           <nav className={`nav-links ${isMenuOpen ? "open" : ""}`}>
             {!isLoggedIn ? (
               <>
-                <button onClick={handlePolitica}>Politica</button>
-                <button onClick={handleSobre}>Sobre</button>
+                <button onClick={handlePolitica}>Política de Privacidade</button>
+                <button onClick={handleSobre}>Sobre Noś</button>
                 <button onClick={handleLogin}>Entrar</button>
                 <button className="cta" onClick={handleRegister}>
                   Registre-se
@@ -298,12 +303,26 @@ export default function LandingPage() {
 
       <footer className="footer">
         <div className="footer-links">
-          <span onClick={handleSobre}>Sobre</span>
-          <span onClick={handlePolitica}>Política</span>
+          <span onClick={handleSobre}>Sobre Nós</span>
+          <span onClick={handlePolitica}>Política de Privacidade</span>
+          <span onClick={handleTermos}>Termos de Uso</span> {/* ✅ novo */}
           <span onClick={() => router.push("/contato")}>Contato</span>
         </div>
 
-        <p>© {new Date().getFullYear()} UrlCurt</p>
+        {/* ✅ confiança / transparência */}
+        <div className="footer-info">
+          <p>
+            UrlCurt é uma plataforma de encurtamento de URLs com foco em segurança e praticidade.
+          </p>
+          <p>
+            🔒 Links são monitorados para evitar spam e conteúdos maliciosos.
+          </p>
+        </div>
+
+        {/* ✅ legal / Google Ads */}
+        <p className="footer-copy">
+          © {new Date().getFullYear()} UrlCurt — Todos os direitos reservados.
+        </p>
       </footer>
 
       {/*<footer className="footer">
