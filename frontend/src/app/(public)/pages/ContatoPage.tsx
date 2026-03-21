@@ -9,7 +9,8 @@ import './LoadingSpinner.css';
 interface ContactPageData {
   name: string;
   email: string;
-  mensagem: string;
+  assunt: string;
+  message: string;
 }
 
 const ContactPage: React.FC = () => {
@@ -17,15 +18,14 @@ const ContactPage: React.FC = () => {
   const template_email = process.env.NEXT_PUBLIC_YOUR_TEMPLATE_ID!;
   const user_email = process.env.NEXT_PUBLIC_YOUR_USER_ID!;
 
-  //console.log({ service_email, template_email, user_email });
-
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const router = useRouter();
 
   const [formData, setFormData] = useState<ContactPageData>({
     name: '',
     email: '',
-    mensagem: '',
+    assunt: '',
+    message: '',
   });
 
   const [status, setStatus] = useState<string>('');
@@ -44,7 +44,7 @@ const ContactPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.email || !formData.mensagem) {
+    if (!formData.name || !formData.email || !formData.message || !formData.assunt) {
       setStatus('Por favor, preencha todos os campos.');
       return;
     }
@@ -58,7 +58,7 @@ const ContactPage: React.FC = () => {
 
     try {
       await emailjs.send(service_email, template_email, { ...formData }, user_email);
-      setFormData({ name: '', email: '', mensagem: '' });
+      setFormData({ name: '', email: '', message: '', assunt: '' });
       setIsLoading(false);
       setShowSuccessModal(true);
       setTimeout(() => {
@@ -136,7 +136,7 @@ const ContactPage: React.FC = () => {
           {isLoading && (
             <div className="loading-overlay">
               <div className="loading-spinner"></div>
-              <p className="loading-text">Enviando sua mensagem...</p>
+              <p className="loading-text">Enviando sua message...</p>
             </div>
           )}
 
@@ -144,7 +144,7 @@ const ContactPage: React.FC = () => {
             <div style={modalOverlayStyle}>
               <div style={modalStyle}>
                 <h3 style={{ marginBottom: '10px' }}>
-                  Mensagem enviada com sucesso!
+                  message enviada com sucesso!
                 </h3>
                 <p>Entraremos em contato em breve.</p>
                 <button
@@ -188,11 +188,25 @@ const ContactPage: React.FC = () => {
 
             <div>
               <label className="block text-gray-700 font-medium mb-1">
-                Mensagem:
+                Assunto:
+              </label>
+              <input
+                type="text"
+                name="assunt"
+                value={formData.assunt}
+                onChange={handleChange}
+                disabled={isLoading}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">
+                message:
               </label>
               <textarea
-                name="mensagem"
-                value={formData.mensagem}
+                name="message"
+                value={formData.message}
                 onChange={handleChange}
                 disabled={isLoading}
                 className="w-full p-3 border text-gray-700 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
